@@ -1,0 +1,295 @@
+/* app/profile/page.module.css */
+.page { min-height: 100vh; display: flex; flex-direction: column; background: #fafafa; }
+
+.main {
+  flex: 1;
+  max-width: 1000px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 40px 24px 60px;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.section {}
+
+.sectionTitle {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-mid);
+  margin-bottom: 14px;
+  letter-spacing: 0.3px;
+}
+
+/* ── Task Overview ── */
+.taskRow {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.taskCard {
+  flex: 1;
+  min-width: 100px;
+  background: white;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  position: relative;
+}
+
+.taskCard.taskActive {
+  background: var(--green-dark);
+  border-color: var(--green-dark);
+}
+.taskActive .taskValue,
+.taskActive .taskLabel { color: white; }
+
+.taskValue {
+  font-family: 'Syne', sans-serif;
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--text-dark);
+  line-height: 1;
+}
+
+.taskLabel {
+  font-size: 10px;
+  color: var(--text-light);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.taskCheck {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 18px;
+  height: 18px;
+  background: var(--green-light);
+  border-radius: 50%;
+  font-size: 10px;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ── Mid row: Ledger + Calendar ── */
+.midRow {
+  display: grid;
+  grid-template-columns: 1fr 220px;
+  gap: 20px;
+  align-items: start;
+}
+
+/* Document Ledger */
+.ledger {
+  background: white;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  overflow: hidden;
+}
+
+.ledgerHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+.ledgerTitle {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: var(--text-dark);
+}
+
+.updateBtn {
+  background: var(--green-dark);
+  color: white;
+  padding: 5px 12px;
+  border-radius: 5px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.ledgerTable {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.ledgerTable th {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  color: var(--text-light);
+  text-align: left;
+  padding: 8px 20px;
+  background: #fafafa;
+  border-bottom: 1px solid var(--border);
+}
+
+.ledgerTable td {
+  padding: 12px 20px;
+  border-bottom: 1px solid #f5f5f5;
+  vertical-align: middle;
+}
+
+.ledgerTable tr:last-child td { border-bottom: none; }
+
+.docName {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-dark);
+  margin-bottom: 2px;
+}
+.docSub { font-size: 10px; color: var(--text-light); }
+
+/* Status badges */
+.statusBadge {
+  display: inline-block;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+.status_decline { background: #fee2e2; color: #dc2626; }
+.status_completed { background: #d1fae5; color: #059669; }
+.status_pending { background: #fef3c7; color: #d97706; }
+
+/* Urgency badges */
+.urgencyBadge {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+}
+.urgencyHigh { color: #dc2626; }
+.urgencyMed { color: #d97706; }
+.urgencyLow { color: #059669; }
+
+.actionBtn {
+  background: none;
+  border: 1.5px solid var(--border);
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-mid);
+  transition: all 0.2s;
+}
+.actionBtn:hover { border-color: var(--green-dark); color: var(--green-dark); }
+
+.legend {
+  padding: 10px 20px;
+  display: flex;
+  gap: 20px;
+  border-top: 1px solid var(--border);
+  background: #fafafa;
+}
+.legendItem {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 9px;
+  color: var(--text-light);
+}
+.dotGreen { width: 8px; height: 8px; border-radius: 50%; background: var(--green-mid); flex-shrink: 0; }
+.dotGray { width: 8px; height: 8px; border-radius: 50%; background: #bbb; flex-shrink: 0; }
+
+/* ── Calendar ── */
+.calendar {
+  background: white;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  padding: 16px;
+}
+
+.calHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.calMonth {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: var(--text-dark);
+}
+
+.calNav {
+  display: flex;
+  gap: 4px;
+}
+.calNav button {
+  background: none;
+  border: 1px solid var(--border);
+  width: 22px;
+  height: 22px;
+  border-radius: 4px;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-mid);
+  cursor: pointer;
+}
+
+.calGrid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+}
+
+.calDayName {
+  font-size: 9px;
+  font-weight: 700;
+  color: var(--text-light);
+  text-align: center;
+  padding: 4px 0;
+}
+
+.calDay {
+  font-size: 10px;
+  text-align: center;
+  padding: 5px 2px;
+  border-radius: 4px;
+  color: var(--text-mid);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.calDay:hover { background: #f0f0f0; }
+
+.calToday {
+  background: var(--green-dark);
+  color: white;
+  font-weight: 700;
+}
+.calToday:hover { background: var(--green-mid); }
+
+/* ── My Scholarships ── */
+.scholarshipGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 18px;
+  max-width: 560px;
+}
+
+@media (max-width: 768px) {
+  .midRow { grid-template-columns: 1fr; }
+  .taskRow { gap: 8px; }
+  .taskCard { min-width: 80px; }
+  .scholarshipGrid { grid-template-columns: 1fr; max-width: 100%; }
+}

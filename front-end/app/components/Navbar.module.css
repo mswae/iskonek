@@ -1,0 +1,98 @@
+/* app/components/Navbar.module.css */
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 40px;
+  height: 56px;
+  background: white;
+  border-bottom: 1px solid #f0f0f0;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.logoText {
+  font-family: 'Syne', sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--green-dark);
+  letter-spacing: -0.5px;
+}
+
+.navLinks {
+  display: flex;
+  gap: 28px;
+  list-style: none;
+}
+
+.navLink {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-mid);
+  transition: color 0.2s;
+}
+
+.navLink:hover,
+.navLink.active {
+  color: var(--green-dark);
+  font-weight: 600;
+}
+
+.navCta { display: flex; align-items: center; }
+
+.loginBtn {
+  background: var(--orange);
+  color: white;
+  padding: 7px 18px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  transition: background 0.2s;
+}
+.loginBtn:hover { background: var(--orange-light); }
+
+.userActions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.iconBtn {
+  background: none;
+  border: none;
+  color: var(--text-mid);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.iconBtn:hover { background: #f5f5f5; }
+
+.avatarBtn {
+  background: var(--green-dark);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  transition: background 0.2s;
+}
+.avatarBtn:hover { background: var(--green-mid); }
+
+@media (max-width: 640px) {
+  .navbar { padding: 0 20px; }
+  .navLinks { gap: 16px; }
+}
