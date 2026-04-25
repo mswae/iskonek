@@ -14,11 +14,11 @@ Currently, the project is in the initial development phase, focusing on establis
 ## Repository Structure
 The project uses a strict decoupled architecture. Both servers must be running simultaneously for the application to function.
 
-``````text
+```text
 iskonek/
 ├── backend/      # Django API server (Port 8000)
 └── frontend/     # Next.js UI client (Port 3000)
-``` 
+```
 
 ## Getting Started (Local Development)
 
@@ -29,7 +29,7 @@ iskonek/
 ### 1. Setting up the Frontend
 Navigate to the frontend directory, install the Node dependencies, and start the Next.js development server.
 
-`````bash
+```bash
 cd frontend
 npm install
 npm run dev
@@ -41,7 +41,7 @@ The frontend will be available at `http://localhost:3000`.
 Open a new terminal window, navigate to the backend directory, create an isolated Python environment, and start the Django server.
 
 **For Windows:**
-````bash
+```bash
 cd backend
 python -m venv venv
 .\venv\Scripts\activate
@@ -70,4 +70,3 @@ The backend API will be available at `http://localhost:8000`.
 
 ## Proponents
 John Benedict P. Baladia, Althea Nicole S. Cestina, Arwen, Alezandra Hertz G. Fresnido, Kirsten Gail A. Querubin
-```
