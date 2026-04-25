@@ -69,4 +69,4 @@ The backend API will be available at `http://localhost:8000`.
 * [Pending] Implementing the matching algorithm via Django views.
 
 ## Proponents
-John Benedict P. Baladia, Althea Nicole S. Cestina, Arwen, Alezandra Hertz G. Fresnido, Kirsten Gail A. Querubin
+Althea Nicole S. Cestina, John Benedict P. Baladia, Arwen Fajardo, Alezandra Hertz G. Fresnido, Kirsten Gail A. Querubin
