@@ -1,0 +1,419 @@
+/*!****************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[13].oneOf[7].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[13].oneOf[7].use[3]!./app/components/Navbar.module.css ***!
+  \****************************************************************************************************************************************************************************************************************************************************************************/
+/* app/components/Navbar.module.css */
+.Navbar_navbar__XlgWY {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 40px;
+  height: 56px;
+  background: white;
+  border-bottom: 1px solid #f0f0f0;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.Navbar_logo__ycYQk {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.Navbar_logoText__4ifaj {
+  font-family: 'Syne', sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--green-dark);
+  letter-spacing: -0.5px;
+}
+
+.Navbar_navLinks__5FCHq {
+  display: flex;
+  gap: 28px;
+  list-style: none;
+}
+
+.Navbar_navLink__NoUWm {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-mid);
+  transition: color 0.2s;
+}
+
+.Navbar_navLink__NoUWm:hover,
+.Navbar_navLink__NoUWm.Navbar_active__gl4X_ {
+  color: var(--green-dark);
+  font-weight: 600;
+}
+
+.Navbar_navCta__Q5_mi { display: flex; align-items: center; }
+
+.Navbar_loginBtn__XwkgY {
+  background: var(--orange);
+  color: white;
+  padding: 7px 18px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  transition: background 0.2s;
+}
+.Navbar_loginBtn__XwkgY:hover { background: var(--orange-light); }
+
+.Navbar_userActions__qVowk {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.Navbar_iconBtn__XblMi {
+  background: none;
+  border: none;
+  color: var(--text-mid);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.Navbar_iconBtn__XblMi:hover { background: #f5f5f5; }
+
+.Navbar_avatarBtn__3sCYx {
+  background: var(--green-dark);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  transition: background 0.2s;
+}
+.Navbar_avatarBtn__3sCYx:hover { background: var(--green-mid); }
+
+@media (max-width: 640px) {
+  .Navbar_navbar__XlgWY { padding: 0 20px; }
+  .Navbar_navLinks__5FCHq { gap: 16px; }
+}
+
+/*!****************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[13].oneOf[7].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[13].oneOf[7].use[3]!./app/components/Footer.module.css ***!
+  \****************************************************************************************************************************************************************************************************************************************************************************/
+/* app/components/Footer.module.css */
+.Footer_footer__0IXn3 {
+  background: var(--cream);
+  border-top: 1px solid var(--border);
+  padding: 36px 60px;
+}
+
+.Footer_inner__QQiBh {
+  max-width: 960px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 48px;
+}
+
+.Footer_brand__CkhSj { flex: 1; }
+
+.Footer_logoRow__XWwVe {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+
+.Footer_logoText__JvvTN {
+  font-family: 'Syne', sans-serif;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--green-dark);
+}
+
+.Footer_tagline__kug6f {
+  font-size: 11px;
+  color: var(--text-light);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  margin-top: 2px;
+}
+
+.Footer_divider__OvB0t {
+  width: 1px;
+  height: 80px;
+  background: var(--border);
+}
+
+.Footer_contact__ulAli { flex: 1; }
+
+.Footer_contactTitle__eUmMM {
+  font-family: 'Syne', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.Footer_contactSub__aNX7R {
+  font-size: 12px;
+  color: var(--text-light);
+  margin-bottom: 10px;
+}
+
+.Footer_contactLabel__nWP9S {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-mid);
+  margin-bottom: 2px;
+}
+
+.Footer_contactDetail__WyhCk {
+  font-size: 13px;
+  color: var(--text-mid);
+}
+
+@media (max-width: 640px) {
+  .Footer_footer__0IXn3 { padding: 28px 24px; }
+  .Footer_inner__QQiBh { flex-direction: column; gap: 24px; align-items: flex-start; }
+  .Footer_divider__OvB0t { width: 60px; height: 1px; }
+}
+
+/*!*************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[13].oneOf[7].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[13].oneOf[7].use[3]!./app/components/ScholarshipCard.module.css ***!
+  \*************************************************************************************************************************************************************************************************************************************************************************************/
+/* app/components/ScholarshipCard.module.css */
+.ScholarshipCard_card__5CFIF {
+  background: white;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: box-shadow 0.2s, transform 0.2s;
+}
+.ScholarshipCard_card__5CFIF:hover {
+  box-shadow: var(--shadow);
+  transform: translateY(-2px);
+}
+
+.ScholarshipCard_cardImage__eRGiY {
+  height: 100px;
+  width: 100%;
+  flex-shrink: 0;
+}
+
+.ScholarshipCard_cardBody__nbanm {
+  padding: 14px 16px 8px;
+  flex: 1;
+}
+
+.ScholarshipCard_cardTitle__Z4eHU {
+  font-family: 'Syne', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-dark);
+  margin-bottom: 6px;
+  line-height: 1.3;
+}
+
+.ScholarshipCard_cardMeta__M1OA_ {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  margin-bottom: 6px;
+}
+
+.ScholarshipCard_amount__Fx3Zp {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--green-dark);
+}
+
+.ScholarshipCard_deadline__Id5XI {
+  font-size: 11px;
+  color: var(--text-light);
+}
+
+.ScholarshipCard_cardDesc__ibkyl {
+  font-size: 11px;
+  color: var(--text-mid);
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.ScholarshipCard_cardFooter__WGuFb {
+  padding: 10px 16px 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ScholarshipCard_detailsBtn__ArARX {
+  background: white;
+  border: 1.5px solid var(--border);
+  color: var(--text-dark);
+  padding: 5px 14px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+.ScholarshipCard_detailsBtn__ArARX:hover {
+  border-color: var(--green-dark);
+  color: var(--green-dark);
+}
+
+.ScholarshipCard_bookmarkBtn__ensld {
+  background: none;
+  border: 1.5px solid var(--border);
+  color: var(--text-light);
+  width: 30px;
+  height: 30px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+.ScholarshipCard_bookmarkBtn__ensld:hover {
+  border-color: var(--green-dark);
+  color: var(--green-dark);
+}
+.ScholarshipCard_bookmarkBtn__ensld.ScholarshipCard_bookmarked__uN6eL {
+  background: var(--green-dark);
+  border-color: var(--green-dark);
+  color: white;
+}
+
+/*!********************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[13].oneOf[7].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[13].oneOf[7].use[3]!./app/home/page.module.css ***!
+  \********************************************************************************************************************************************************************************************************************************************************************/
+/* app/home/page.module.css */
+.page_page__SipoC { min-height: 100vh; display: flex; flex-direction: column; background: #fafafa; }
+
+.page_main__Qo9Ir {
+  flex: 1;
+  max-width: 900px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 48px 24px 60px;
+}
+
+.page_heading__fAwbw { text-align: center; margin-bottom: 28px; }
+
+.page_title__n1osh {
+  font-family: 'Syne', sans-serif;
+  font-size: 36px;
+  font-weight: 800;
+  color: var(--text-dark);
+  margin-bottom: 6px;
+}
+
+.page_subtitle__DL3A2 {
+  font-size: 14px;
+  color: var(--text-light);
+}
+
+/* Search bar */
+.page_searchRow__bpC7O {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 36px;
+}
+
+.page_searchWrap__61kM_ {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: white;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  padding: 0 14px;
+  height: 40px;
+}
+
+.page_searchInput__wLSiX {
+  border: none;
+  outline: none;
+  font-size: 13px;
+  font-family: 'Space Grotesk', sans-serif;
+  color: var(--text-dark);
+  flex: 1;
+  background: transparent;
+}
+.page_searchInput__wLSiX::placeholder { color: #bbb; }
+
+.page_filterBtn__CGz5v {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: white;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  padding: 0 16px;
+  height: 40px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-mid);
+  transition: border-color 0.2s;
+  white-space: nowrap;
+}
+.page_filterBtn__CGz5v:hover { border-color: var(--green-dark); color: var(--green-dark); }
+
+/* Grid */
+.page_grid__BAxJo {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+}
+
+.page_empty__242KC {
+  text-align: center;
+  color: var(--text-light);
+  padding: 60px 0;
+  font-size: 14px;
+}
+
+/* Pagination */
+.page_pagination__Abduj {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 36px;
+}
+
+.page_pageBtn__IKgxB {
+  background: white;
+  border: 1.5px solid var(--border);
+  color: var(--text-dark);
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+.page_pageBtn__IKgxB:hover:not(:disabled) {
+  border-color: var(--green-dark);
+  color: var(--green-dark);
+}
+.page_pageBtn__IKgxB:disabled { opacity: 0.3; cursor: not-allowed; }
+
+@media (max-width: 768px) {
+  .page_grid__BAxJo { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 480px) {
+  .page_grid__BAxJo { grid-template-columns: 1fr; }
+  .page_title__n1osh { font-size: 26px; }
+}
+

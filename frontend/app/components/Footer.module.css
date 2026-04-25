@@ -1,0 +1,77 @@
+/* app/components/Footer.module.css */
+.footer {
+  background: var(--cream);
+  border-top: 1px solid var(--border);
+  padding: 36px 60px;
+}
+
+.inner {
+  max-width: 960px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 48px;
+}
+
+.brand { flex: 1; }
+
+.logoRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+
+.logoText {
+  font-family: 'Syne', sans-serif;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--green-dark);
+}
+
+.tagline {
+  font-size: 11px;
+  color: var(--text-light);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  margin-top: 2px;
+}
+
+.divider {
+  width: 1px;
+  height: 80px;
+  background: var(--border);
+}
+
+.contact { flex: 1; }
+
+.contactTitle {
+  font-family: 'Syne', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.contactSub {
+  font-size: 12px;
+  color: var(--text-light);
+  margin-bottom: 10px;
+}
+
+.contactLabel {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-mid);
+  margin-bottom: 2px;
+}
+
+.contactDetail {
+  font-size: 13px;
+  color: var(--text-mid);
+}
+
+@media (max-width: 640px) {
+  .footer { padding: 28px 24px; }
+  .inner { flex-direction: column; gap: 24px; align-items: flex-start; }
+  .divider { width: 60px; height: 1px; }
+}
