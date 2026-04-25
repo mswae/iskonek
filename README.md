@@ -1,36 +1,73 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ISKOnek
 
-## Getting Started
+> **Status:** Early Development (Environment Scaffolding)
 
-First, run the development server:
+ISKOnek is a web-based platform designed to consolidate scholarship opportunities and automatically match Filipino students to funding based on their academic profile and eligibility.
 
-```bash
+Currently, the project is in the initial development phase, focusing on establishing a decoupled architecture between a React-based UI and a Python API.
+
+## Tech Stack
+* **Frontend:** Next.js (React 18/19), Tailwind CSS v4
+* **Backend:** Django, Django REST Framework (DRF)
+* **Database:** PostgreSQL (Planned)
+
+## Repository Structure
+The project uses a strict decoupled architecture. Both servers must be running simultaneously for the application to function.
+
+``````text
+iskonek/
+├── backend/      # Django API server (Port 8000)
+└── frontend/     # Next.js UI client (Port 3000)
+``` 
+
+## Getting Started (Local Development)
+
+### Prerequisites
+* [Node.js](https://nodejs.org/) (for the frontend)
+* [Python 3.x](https://www.python.org/) (for the backend)
+
+### 1. Setting up the Frontend
+Navigate to the frontend directory, install the Node dependencies, and start the Next.js development server.
+
+`````bash
+cd frontend
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+The frontend will be available at `http://localhost:3000`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 2. Setting up the Backend
+Open a new terminal window, navigate to the backend directory, create an isolated Python environment, and start the Django server.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+**For Windows:**
+````bash
+cd backend
+python -m venv venv
+.\venv\Scripts\activate
+pip install django djangorestframework django-cors-headers
+python manage.py runserver
+```
 
-## Learn More
+**For Mac/Linux:**
+```bash
+cd backend
+python3 -m venv venv
+source venv/bin/activate
+pip install django djangorestframework django-cors-headers
+python manage.py runserver
+```
 
-To learn more about Next.js, take a look at the following resources:
+The backend API will be available at `http://localhost:8000`.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+> **Note:** Always ensure your virtual environment `(venv)` is activated before running backend commands.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Current Development Goals
+* [In Progress] Database modeling for Student Profiles and Scholarship criteria.
+* [In Progress] Configuring CORS headers to allow `localhost:3000` to fetch data from `localhost:8000`.
+* [Pending] Building out the core React component library.
+* [Pending] Implementing the matching algorithm via Django views.
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Proponents
+John Benedict P. Baladia, Althea Nicole S. Cestina, Arwen, Alezandra Hertz G. Fresnido, Kirsten Gail A. Querubin
+```
