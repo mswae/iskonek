@@ -4,15 +4,21 @@ import { useState } from 'react';
 import Link from 'next/link';
 import styles from './ScholarshipCard.module.css';
 
+// frontend/app/components/ScholarshipCard.tsx
 export interface Scholarship {
   id: string;
   title: string;
-  tag: string;     // e.g. "RA 7687"
+  tag: string;     
   amount: string;
   deadline: string;
   description: string;
-  gradient: string; // CSS gradient for card image area
+  gradient: string; 
   bookmarked?: boolean;
+  criteria: {
+    minGwa: number;
+    maxIncome: number;
+    course: string;
+  };
 }
 
 interface ScholarshipCardProps {
