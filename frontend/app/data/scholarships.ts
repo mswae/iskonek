@@ -12,6 +12,11 @@ export const SCHOLARSHIPS: Scholarship[] = [
       'Government scholarship for financially challenged, talented students pursuing priority S&T courses like Engineering, Math, and Sciences. Includes stipend and books allowance.',
     gradient: 'linear-gradient(135deg, #4caf88 0%, #d4622a 100%)',
     bookmarked: true,
+    criteria: {
+      minGwa: 85,
+      maxIncome: 300000,
+      course: 'STEM',
+    }
   },
   {
     id: '2',
@@ -23,6 +28,11 @@ export const SCHOLARSHIPS: Scholarship[] = [
       'Financial assistance for academically gifted Filipino students pursuing undergraduate degrees in CHED-priority programs (Full or Half-Merit).',
     gradient: 'linear-gradient(135deg, #2d8c62 0%, #1a6648 100%)',
     bookmarked: false,
+    criteria: {
+      minGwa: 90,
+      maxIncome: 400000,
+      course: 'ANY',
+    }
   },
   {
     id: '3',
@@ -34,6 +44,11 @@ export const SCHOLARSHIPS: Scholarship[] = [
       'Private scholarship offering full tuition, monthly allowance, and job opportunities for students in partner schools, specializing in Tech, Engineering, or Education.',
     gradient: 'linear-gradient(135deg, #f0b429 0%, #2d8c62 100%)',
     bookmarked: false,
+    criteria: {
+      minGwa: 88,
+      maxIncome: 250000,
+      course: 'STEM',
+    }
   },
   {
     id: '4',
@@ -45,6 +60,11 @@ export const SCHOLARSHIPS: Scholarship[] = [
       'Private scholarship offering full tuition, monthly allowance, and job opportunities for students in partner schools, specializing in Tech, Engineering, or Education.',
     gradient: 'linear-gradient(135deg, #d4622a 0%, #f0b429 60%, #2d8c62 100%)',
     bookmarked: false,
+    criteria: {
+      minGwa: 88,
+      maxIncome: 250000,
+      course: 'STEM',
+    }
   },
   {
     id: '5',
@@ -56,6 +76,11 @@ export const SCHOLARSHIPS: Scholarship[] = [
       'A competitive program for a qualified dependent (child or spouse) of an active Overseas Filipino Worker (OFW) who is pursuing a 4 or 5-year course.',
     gradient: 'linear-gradient(135deg, #1a6648 0%, #4caf88 100%)',
     bookmarked: false,
+    criteria: {
+      minGwa: 80,
+      maxIncome: 9999999, // Assuming no strict income cap for OFWs in this mock
+      course: 'ANY',
+    }
   },
   {
     id: '6',
@@ -67,5 +92,10 @@ export const SCHOLARSHIPS: Scholarship[] = [
       'Offers full tuition and a monthly allowance to high-achieving college students in STEM, business or education programs, with incentives for Latin honors.',
     gradient: 'linear-gradient(135deg, #f0b429 0%, #d4622a 100%)',
     bookmarked: false,
+    criteria: {
+      minGwa: 88,
+      maxIncome: 350000,
+      course: ['STEM', 'BUSINESS', 'EDUC'],
+    }
   },
 ];
