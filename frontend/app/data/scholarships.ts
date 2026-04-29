@@ -16,7 +16,8 @@ export const SCHOLARSHIPS: Scholarship[] = [
       minGwa: 85,
       maxIncome: 300000,
       course: 'STEM',
-    }
+    },
+    link: 'https://www.sei.dost.gov.ph/',
   },
   {
     id: '2',
@@ -32,7 +33,8 @@ export const SCHOLARSHIPS: Scholarship[] = [
       minGwa: 90,
       maxIncome: 400000,
       course: 'ANY',
-    }
+    },
+    link: 'https://dexus.r5.ched.gov.ph/student/login',
   },
   {
     id: '3',
@@ -48,8 +50,10 @@ export const SCHOLARSHIPS: Scholarship[] = [
       minGwa: 88,
       maxIncome: 250000,
       course: 'STEM',
-    }
+    },
+    link: 'https://www.sm-foundation.org/', 
   },
+
   {
     id: '4',
     title: 'SM Foundation College Scholarship Program',
@@ -64,7 +68,8 @@ export const SCHOLARSHIPS: Scholarship[] = [
       minGwa: 88,
       maxIncome: 250000,
       course: 'STEM',
-    }
+    },
+    link: 'https://www.sm-foundation.org/',
   },
   {
     id: '5',
@@ -80,7 +85,8 @@ export const SCHOLARSHIPS: Scholarship[] = [
       minGwa: 80,
       maxIncome: 9999999, // Assuming no strict income cap for OFWs in this mock
       course: 'ANY',
-    }
+    },
+    link: 'https://owwa.gov.ph/',
   },
   {
     id: '6',
@@ -96,6 +102,7 @@ export const SCHOLARSHIPS: Scholarship[] = [
       minGwa: 88,
       maxIncome: 350000,
       course: ['STEM', 'BUSINESS', 'EDUC'],
-    }
+    },
+    link: 'https://aboitiz.com/our-businesses/aboitiz-foundation/aboitiz-future-leaders-scholarship',
   },
 ];
