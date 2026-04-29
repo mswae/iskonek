@@ -10,7 +10,6 @@ export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const [isSignup, setIsSignup] = useState(false);
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -40,23 +39,10 @@ export default function LoginPage() {
       {/* Right panel — form */}
       <div className={styles.rightPanel}>
         <div className={styles.formCard}>
-          <h2 className={styles.formTitle}>{isSignup ? 'Create Account' : 'Welcome Back'}</h2>
-          <p className={styles.formSub}>
-            {isSignup ? 'Sign up to find scholarships.' : 'Log in to continue.'}
-          </p>
+          <h2 className={styles.formTitle}>Welcome Back</h2>
+          <p className={styles.formSub}>Log in to continue.</p>
 
           <form onSubmit={handleSubmit} className={styles.form}>
-            {isSignup && (
-              <div className={styles.field}>
-                <label className={styles.label}>Full Name</label>
-                <input
-                  type="text"
-                  placeholder="Juan Dela Cruz"
-                  className={styles.input}
-                  required
-                />
-              </div>
-            )}
             <div className={styles.field}>
               <label className={styles.label}>Email</label>
               <input
@@ -81,15 +67,13 @@ export default function LoginPage() {
             </div>
 
             <button type="submit" className={styles.submitBtn} disabled={loading}>
-              {loading ? 'Loading…' : isSignup ? 'Sign Up' : 'Log In'}
+            {loading ? 'Loading…' : 'Log In'}
             </button>
           </form>
 
           <p className={styles.switchText}>
-            {isSignup ? 'Already have an account? ' : "Don't have an account? "}
-            <button className={styles.switchBtn} onClick={() => setIsSignup(!isSignup)}>
-              {isSignup ? 'Log In' : 'Sign Up'}
-            </button>
+            {"Don't have an account? "}
+            <Link href="/register" className={styles.switchBtn}>Sign Up</Link>
           </p>
         </div>
       </div>
