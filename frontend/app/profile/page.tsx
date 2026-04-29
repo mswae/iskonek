@@ -147,8 +147,12 @@ export default function ProfilePage() {
                       </td>
                       <td>
                         <div style={{ display: 'flex', gap: '5px' }}>
-                           <button className={styles.actionBtn} onClick={() => openEditForm(task)}>✎</button>
-                           <button className={styles.actionBtn} onClick={() => deleteTask(task.id)}>✕</button>
+                           <button className={styles.actionBtn} onClick={() => openEditForm(task)}>
+                             <ActionIcon type="edit" />
+                           </button>
+                           <button className={styles.actionBtn} onClick={() => deleteTask(task.id)}>
+                             <ActionIcon type="delete" />
+                           </button>
                         </div>
                       </td>
                     </tr>
@@ -158,7 +162,7 @@ export default function ProfilePage() {
             </table>
           </section>
 
-          {/* Mini Calendar (Unchanged) */}
+          {/* Mini Calendar */}
           <section className={styles.calendar}>
             <div className={styles.calHeader}>
               <span className={styles.calMonth}>MAY 2025</span>
@@ -194,4 +198,19 @@ export default function ProfilePage() {
       <Footer />
     </div>
   );
+}
+
+// Re-added your custom SVG Action icons
+function ActionIcon({ type }: { type: 'edit' | 'delete' }) {
+  if (type === 'edit') return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+      <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+    </svg>
+  );
+  if (type === 'delete') return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#dc2626" strokeWidth="2">
+      <path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/>
+    </svg>
+  );
+  return null;
 }
