@@ -37,7 +37,7 @@ export default function HeroPage() {
               Consolidating scholarship opportunities and matches Filipino Senior High School and Undergraduate Students.
             </p>
             <div className={styles.ctaBtns}>
-              <Link href="/login" className={styles.signupBtn}>Sign Up</Link>
+              <Link href="/register" className={styles.signupBtn}>Sign Up</Link>
               <Link href="/login" className={styles.loginBtnHero}>Log In</Link>
             </div>
           </div>
