@@ -22,7 +22,7 @@ export default function HeroPage() {
           {/* Campus image panel */}
           <div className={styles.campusImage}>
             <img
-              src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/8e/University_of_the_Philippines_Diliman_Administration_Building.jpg/1280px-University_of_the_Philippines_Diliman_Administration_Building.jpg"
+              src="https://i0.wp.com/dateline-ibalon.com/wp-content/uploads/2025/06/ADNU-header.png?fit=930%2C450&ssl=1&w=640"
               alt="University campus"
             />
           </div>
@@ -47,7 +47,7 @@ export default function HeroPage() {
       {/* ── ABOUT ISKONEK SECTION ── */}
       <section className={styles.aboutSection}>
         <h2 className={styles.aboutTitle}>About Iskonek</h2>
-        <p className={styles.aboutSub}>subtitle here here here</p>
+        <p className={styles.aboutSub}>Iskonek FTW!</p>
       </section>
 
       <Footer />

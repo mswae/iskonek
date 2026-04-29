@@ -36,23 +36,6 @@ export const SCHOLARSHIPS: Scholarship[] = [
     },
     link: 'https://dexus.r5.ched.gov.ph/student/login',
   },
-  {
-    id: '3',
-    title: 'SM Foundation College Scholarship Program',
-    tag: 'SM',
-    amount: 'Amount: Php 100,000/Year (Exc.)',
-    deadline: '01/31/26',
-    description:
-      'Private scholarship offering full tuition, monthly allowance, and job opportunities for students in partner schools, specializing in Tech, Engineering, or Education.',
-    gradient: 'linear-gradient(135deg, #f0b429 0%, #2d8c62 100%)',
-    bookmarked: false,
-    criteria: {
-      minGwa: 88,
-      maxIncome: 250000,
-      course: 'STEM',
-    },
-    link: 'https://www.sm-foundation.org/', 
-  },
 
   {
     id: '4',

@@ -4,11 +4,11 @@ import Footer from '../components/Footer';
 import styles from './page.module.css';
 
 const TEAM = [
-  { name: 'Juan Dela Cruz', role: 'Lead Developer' },
-  { name: 'Maria Santos', role: 'UI/UX Designer' },
-  { name: 'Pedro Reyes', role: 'Backend Developer' },
-  { name: 'Ana Gomez', role: 'Project Manager' },
-  { name: 'Carlos Lim', role: 'Frontend Developer' },
+  { name: 'Althea Nicole Cestina', role: 'Project Manager, Backend Lead' },
+  { name: 'Kirsten Gail Querubin', role: 'UI/UX Lead, Frontend Developer' },
+  { name: 'John Benedict Baladia', role: 'Backend Lead, Frontend Developer' },
+  { name: 'Alezandra Hertz Fresnido', role: 'Documentation Lead, Frontend Developer' },
+  { name: 'Arwen Fajardo', role: 'Frontend Lead, UI/UX Designer' },
 ];
 
 export default function AboutPage() {
@@ -46,7 +46,6 @@ export default function AboutPage() {
 function MemberCard({ name, role }: { name: string; role: string }) {
   return (
     <div className={styles.card}>
-      <div className={styles.cardAvatar} />
       <p className={styles.cardName}>{name}</p>
       <p className={styles.cardRole}>{role}</p>
       <div className={styles.cardLinks}>

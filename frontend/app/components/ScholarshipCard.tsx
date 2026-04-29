@@ -1,10 +1,9 @@
 // app/components/ScholarshipCard.tsx — Reusable scholarship listing card
 'use client';
-import { useState } from 'react';
 import Link from 'next/link';
 import styles from './ScholarshipCard.module.css';
+import { useAppContext } from '../context/AppContext';
 
-// frontend/app/components/ScholarshipCard.tsx
 export interface Scholarship {
   id: string;
   title: string;
@@ -13,12 +12,12 @@ export interface Scholarship {
   deadline: string;
   description: string;
   gradient: string; 
-  link: string; 
-  bookmarked?: boolean;
+  link: string;
+  bookmarked: boolean;
   criteria: {
     minGwa: number;
     maxIncome: number;
-    course: string | string[]; // Note: Aboitiz uses an array here in your mock data
+    course: string | string[];
   };
 }
 
@@ -28,7 +27,8 @@ interface ScholarshipCardProps {
 }
 
 export default function ScholarshipCard({ scholarship, showBookmark = true }: ScholarshipCardProps) {
-  const [bookmarked, setBookmarked] = useState(scholarship.bookmarked ?? false);
+  const { bookmarkedIds, toggleBookmark } = useAppContext();
+  const bookmarked = bookmarkedIds.includes(scholarship.id);
 
   return (
     <div className={styles.card}>
@@ -45,7 +45,7 @@ export default function ScholarshipCard({ scholarship, showBookmark = true }: Sc
         <p className={styles.cardDesc}>{scholarship.description}</p>
       </div>
 
-     {/* Card footer */}
+      {/* Card footer */}
       <div className={styles.cardFooter}>
         <Link 
           href={scholarship.link} 
@@ -58,7 +58,7 @@ export default function ScholarshipCard({ scholarship, showBookmark = true }: Sc
         {showBookmark && (
           <button
             className={`${styles.bookmarkBtn} ${bookmarked ? styles.bookmarked : ''}`}
-            onClick={() => setBookmarked(!bookmarked)}
+            onClick={() => toggleBookmark(scholarship.id)}
             aria-label={bookmarked ? 'Remove bookmark' : 'Bookmark'}
           >
             <BookmarkIcon filled={bookmarked} />
