@@ -11,7 +11,7 @@ export default function Footer() {
             <IskonekLogo />
             <span className={styles.logoText}>iskonek</span>
           </div>
-          <p className={styles.tagline}>TAGLINE TAGLINE TAGLINE</p>
+          <p className={styles.tagline}>ISKOnek para sayo!</p>
         </div>
 
         {/* Divider */}

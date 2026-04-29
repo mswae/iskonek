@@ -34,6 +34,7 @@ export default function ProfilePage() {
   const [requirement, setRequirement] = useState('');
   const [progress, setProgress] = useState<TaskProgress>('Not Started');
   const [urgency, setUrgency] = useState<TaskUrgency>('Medium');
+  const [scholarshipId, setScholarshipId] = useState(''); // <-- Added back!
 
   const openAddForm = () => {
     setEditingTaskId(null);
@@ -41,6 +42,7 @@ export default function ProfilePage() {
     setRequirement('');
     setProgress('Not Started');
     setUrgency('Medium');
+    setScholarshipId(''); // Reset dropdown
     setIsFormOpen(!isFormOpen);
   };
 
@@ -50,13 +52,22 @@ export default function ProfilePage() {
     setRequirement(task.requirement);
     setProgress(task.progress);
     setUrgency(task.urgency);
+    setScholarshipId(task.scholarshipId || ''); // Load existing dropdown value
     setIsFormOpen(true);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (editingTaskId) updateTask(editingTaskId, { title, requirement, progress, urgency });
-    else addTask({ title, requirement, progress, urgency });
+    const taskData = { 
+      title, 
+      requirement, 
+      progress, 
+      urgency,
+      scholarshipId: scholarshipId || null // Save dropdown value
+    };
+
+    if (editingTaskId) updateTask(editingTaskId, taskData);
+    else addTask(taskData);
     setIsFormOpen(false);
   };
 
@@ -109,6 +120,13 @@ export default function ProfilePage() {
                     <option value="Medium">Medium Priority</option>
                     <option value="High">High Priority</option>
                   </select>
+                  {/* The Dropdown! */}
+                  <select value={scholarshipId} onChange={(e) => setScholarshipId(e.target.value)} className={styles.formInput}>
+                    <option value="">-- Link to a Grant (Optional) --</option>
+                    {savedScholarships.map((s) => (
+                      <option key={s.id} value={s.id}>{s.title}</option>
+                    ))}
+                  </select>
                 </div>
                 <div className={styles.formActions}>
                   <button type="submit" className={styles.btnSave}>SAVE TASK</button>
@@ -129,34 +147,45 @@ export default function ProfilePage() {
                 {tasks.length === 0 ? (
                   <tr><td colSpan={4} style={{ textAlign: 'center', padding: '20px', color: '#888', fontSize: '12px' }}>No tasks added yet. Add one above.</td></tr>
                 ) : (
-                  tasks.map((task) => (
-                    <tr key={task.id}>
-                      <td>
-                        <p className={styles.docName}>{task.title}</p>
-                        <p className={styles.docSub}>{task.requirement}</p>
-                      </td>
-                      <td>
-                        <span className={`${styles.statusBadge} ${styles['status_' + task.progress.toLowerCase().replace(' ', '')]}`}>
-                          {task.progress.toUpperCase()}
-                        </span>
-                      </td>
-                      <td>
-                        <span className={`${styles.urgencyBadge} ${task.urgency === 'High' ? styles.urgencyHigh : task.urgency === 'Medium' ? styles.urgencyMed : styles.urgencyLow}`}>
-                          {task.urgency.toUpperCase()} PRIORITY
-                        </span>
-                      </td>
-                      <td>
-                        <div style={{ display: 'flex', gap: '5px' }}>
-                           <button className={styles.actionBtn} onClick={() => openEditForm(task)}>
-                             <ActionIcon type="edit" />
-                           </button>
-                           <button className={styles.actionBtn} onClick={() => deleteTask(task.id)}>
-                             <ActionIcon type="delete" />
-                           </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))
+                  tasks.map((task) => {
+                    // Find the linked scholarship to get its tag
+                    const linkedScholarship = savedScholarships.find((s) => s.id === task.scholarshipId);
+                    
+                    return (
+                      <tr key={task.id}>
+                        <td>
+                          <p className={styles.docName}>{task.title}</p>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <p className={styles.docSub}>{task.requirement}</p>
+                            {/* Render the badge if it exists */}
+                            {linkedScholarship && (
+                              <span className={styles.badgeScholarship}>📌 {linkedScholarship.tag}</span>
+                            )}
+                          </div>
+                        </td>
+                        <td>
+                          <span className={`${styles.statusBadge} ${styles['status_' + task.progress.toLowerCase().replace(' ', '')]}`}>
+                            {task.progress.toUpperCase()}
+                          </span>
+                        </td>
+                        <td>
+                          <span className={`${styles.urgencyBadge} ${task.urgency === 'High' ? styles.urgencyHigh : task.urgency === 'Medium' ? styles.urgencyMed : styles.urgencyLow}`}>
+                            {task.urgency.toUpperCase()} PRIORITY
+                          </span>
+                        </td>
+                        <td>
+                          <div style={{ display: 'flex', gap: '5px' }}>
+                             <button type="button" className={styles.actionBtn} onClick={() => openEditForm(task)}>
+                               <ActionIcon type="edit" />
+                             </button>
+                             <button type="button" className={styles.actionBtn} onClick={() => deleteTask(task.id)}>
+                               <ActionIcon type="delete" />
+                             </button>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })
                 )}
               </tbody>
             </table>
@@ -200,7 +229,7 @@ export default function ProfilePage() {
   );
 }
 
-// Re-added your custom SVG Action icons
+// Custom SVG Action icons
 function ActionIcon({ type }: { type: 'edit' | 'delete' }) {
   if (type === 'edit') return (
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">

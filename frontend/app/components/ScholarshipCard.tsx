@@ -13,6 +13,7 @@ export interface Scholarship {
   description: string;
   gradient: string; 
   link: string;
+  bookmarked: boolean;
   criteria: {
     minGwa: number;
     maxIncome: number;
