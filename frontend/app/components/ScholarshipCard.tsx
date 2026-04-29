@@ -13,11 +13,12 @@ export interface Scholarship {
   deadline: string;
   description: string;
   gradient: string; 
+  link: string; 
   bookmarked?: boolean;
   criteria: {
     minGwa: number;
     maxIncome: number;
-    course: string;
+    course: string | string[]; // Note: Aboitiz uses an array here in your mock data
   };
 }
 
@@ -44,9 +45,16 @@ export default function ScholarshipCard({ scholarship, showBookmark = true }: Sc
         <p className={styles.cardDesc}>{scholarship.description}</p>
       </div>
 
-      {/* Card footer */}
+     {/* Card footer */}
       <div className={styles.cardFooter}>
-        <button className={styles.detailsBtn}>Details</button>
+        <Link 
+          href={scholarship.link} 
+          target="_blank" 
+          rel="noopener noreferrer" 
+          className={styles.detailsBtn}
+        >
+          Details
+        </Link>
         {showBookmark && (
           <button
             className={`${styles.bookmarkBtn} ${bookmarked ? styles.bookmarked : ''}`}
