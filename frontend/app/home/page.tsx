@@ -55,8 +55,27 @@ export default function HomePage() {
   // 2. The Matching Algorithm combined with text search
   // Fetch data from Django on mount
   useEffect(() => {
-    fetch('http://localhost:8000/api/scholarships/')
-      .then((res) => res.json())
+    const token = localStorage.getItem('accessToken');
+    
+    if (!token) {
+      // If no token, bounce them back to login
+      window.location.href = '/login';
+      return;
+    }
+
+    fetch('http://localhost:8000/api/scholarships/', {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    })
+      .then((res) => {
+        if (res.status === 401) {
+            localStorage.removeItem('accessToken');
+            window.location.href = '/login';
+            throw new Error("Unauthorized");
+        }
+        return res.json();
+      })
       .then((data) => {
         const formattedData: Scholarship[] = data.map((item: any) => ({
           id: item.id.toString(),
@@ -89,9 +108,6 @@ export default function HomePage() {
     return s.title.toLowerCase().includes(search.toLowerCase()) ||
            s.description.toLowerCase().includes(search.toLowerCase());
   });
-
-  const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE);
-  const visible = filtered.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE);
 
   const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE);
   const visible = filtered.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE);
