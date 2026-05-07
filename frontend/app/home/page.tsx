@@ -1,19 +1,51 @@
 // app/home/page.tsx — Scholarship Listings Page
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
-import ScholarshipCard from '../components/ScholarshipCard';
-import { SCHOLARSHIPS } from '../data/scholarships';
+import ScholarshipCard, { Scholarship } from '../components/ScholarshipCard';
+// REMOVE: import { SCHOLARSHIPS } from '../data/scholarships';
 import styles from './page.module.css';
 
 const ITEMS_PER_PAGE = 6;
 
 export default function HomePage() {
+  const [scholarships, setScholarships] = useState<Scholarship[]>([]);
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
+  const [loading, setLoading] = useState(true);
 
-  // 1. Mock Student Profile State
+  // Fetch data from Django on mount
+  useEffect(() => {
+    fetch('http://localhost:8000/api/scholarships/')
+      .then((res) => res.json())
+      .then((data) => {
+        // Map Django's flat snake_case to the frontend's nested format
+        const formattedData: Scholarship[] = data.map((item: any) => ({
+          id: item.id.toString(),
+          title: item.title,
+          tag: item.tag,
+          amount: item.amount,
+          deadline: item.deadline,
+          description: item.description,
+          gradient: item.gradient,
+          link: item.link,
+          bookmarked: item.bookmarked,
+          criteria: {
+            minGwa: item.min_gwa,
+            maxIncome: item.max_income,
+            course: item.course,
+          }
+        }));
+        setScholarships(formattedData);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error("Failed to fetch scholarships:", err);
+        setLoading(false);
+      });
+  }, []);
+
   const [studentProfile, setStudentProfile] = useState({
     gwa: 88,
     income: 250000,

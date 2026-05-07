@@ -1,7 +1,6 @@
-from django.contrib import admin
-from django.urls import path, include
+from django.urls import path
+from .views import ScholarshipListView
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('api/scholarships/', include('scholarships.urls')),
+    path('', ScholarshipListView.as_view(), name='scholarship-list'),
 ]
