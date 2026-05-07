@@ -61,3 +61,47 @@ class RegisterView(APIView):
                 user.delete()
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
         
+class ProfileView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        try:
+            profile = user.studentprofile
+        except:
+            return Response({"error": "Profile not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        return Response({
+            "fullName": user.first_name,
+            "email": user.email,
+            "gwa": profile.gwa,
+            "income": profile.income,
+            "course": profile.course,
+        })
+
+    def put(self, request):
+        data = request.data
+        user = request.user
+        profile = user.studentprofile
+
+        try:
+            # Update User model
+            if 'fullName' in data:
+                user.first_name = data['fullName']
+            if 'email' in data:
+                user.email = data['email']
+                user.username = data['email'] # Keep username and email synced
+            user.save()
+
+            # Update StudentProfile model
+            if 'gwa' in data:
+                profile.gwa = float(data['gwa'])
+            if 'income' in data:
+                profile.income = int(data['income'])
+            if 'course' in data:
+                profile.course = data['course']
+            profile.save()
+
+            return Response({"message": "Profile updated successfully!"}, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)

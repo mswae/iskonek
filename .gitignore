@@ -44,3 +44,14 @@ next-env.d.ts
 frontend/node_modules/
 backend/venv/
 frontend/.next
+
+# Django / Python
+backend/.env
+backend/venv/
+backend/__pycache__/
+backend/db.sqlite3
+
+# Next.js / Node
+frontend/node_modules/
+frontend/.next/
+frontend/.env

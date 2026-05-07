@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import ScholarshipCard from '../components/ScholarshipCard';
@@ -27,14 +27,91 @@ export default function ProfilePage() {
     { label: 'Saved Grants', value: savedScholarships.length.toString().padStart(2, '0'), icon: '🔖', active: false },
   ];
 
-  // Form State
+  // ── Backend Profile State ──
+  const [profile, setProfile] = useState({
+    fullName: '',
+    email: '',
+    gwa: '',
+    income: '',
+    course: '',
+  });
+  const [loadingProfile, setLoadingProfile] = useState(true);
+  const [savingProfile, setSavingProfile] = useState(false);
+  const [profileMessage, setProfileMessage] = useState('');
+  const [isProfileFormOpen, setIsProfileFormOpen] = useState(false);
+
+  // ── Ledger Task Form State ──
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingTaskId, setEditingTaskId] = useState<string | null>(null);
   const [title, setTitle] = useState('');
   const [requirement, setRequirement] = useState('');
   const [progress, setProgress] = useState<TaskProgress>('Not Started');
   const [urgency, setUrgency] = useState<TaskUrgency>('Medium');
-  const [scholarshipId, setScholarshipId] = useState(''); // <-- Added back!
+  const [scholarshipId, setScholarshipId] = useState(''); 
+
+  // Fetch the user data from Django on mount
+  useEffect(() => {
+    const token = localStorage.getItem('accessToken');
+    if (!token) {
+      window.location.href = '/login';
+      return;
+    }
+
+    fetch('http://localhost:8000/api/scholarships/profile/', {
+      headers: { 'Authorization': `Bearer ${token}` }
+    })
+      .then(res => {
+        if (res.status === 401) {
+          localStorage.removeItem('accessToken');
+          window.location.href = '/login';
+          throw new Error('Unauthorized');
+        }
+        return res.json();
+      })
+      .then(data => {
+        setProfile({
+          fullName: data.fullName || '',
+          email: data.email || '',
+          gwa: data.gwa?.toString() || '',
+          income: data.income?.toString() || '',
+          course: data.course || '',
+        });
+        setLoadingProfile(false);
+      })
+      .catch(err => console.error(err));
+  }, []);
+
+  // Update Profile Data to Django
+  const handleProfileSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSavingProfile(true);
+    setProfileMessage('');
+    
+    const token = localStorage.getItem('accessToken');
+
+    try {
+      const res = await fetch('http://localhost:8000/api/scholarships/profile/', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(profile),
+      });
+
+      if (res.ok) {
+        setProfileMessage('Profile updated successfully!');
+        setTimeout(() => setProfileMessage(''), 3000);
+        setIsProfileFormOpen(false); // Close form on success
+      } else {
+        setProfileMessage('Failed to update profile. Please check your inputs.');
+      }
+    } catch (err) {
+      setProfileMessage('Server error. Ensure Django is running.');
+    } finally {
+      setSavingProfile(false);
+    }
+  };
 
   const openAddForm = () => {
     setEditingTaskId(null);
@@ -42,7 +119,7 @@ export default function ProfilePage() {
     setRequirement('');
     setProgress('Not Started');
     setUrgency('Medium');
-    setScholarshipId(''); // Reset dropdown
+    setScholarshipId(''); 
     setIsFormOpen(!isFormOpen);
   };
 
@@ -52,7 +129,7 @@ export default function ProfilePage() {
     setRequirement(task.requirement);
     setProgress(task.progress);
     setUrgency(task.urgency);
-    setScholarshipId(task.scholarshipId || ''); // Load existing dropdown value
+    setScholarshipId(task.scholarshipId || ''); 
     setIsFormOpen(true);
   };
 
@@ -63,7 +140,7 @@ export default function ProfilePage() {
       requirement, 
       progress, 
       urgency,
-      scholarshipId: scholarshipId || null // Save dropdown value
+      scholarshipId: scholarshipId || null 
     };
 
     if (editingTaskId) updateTask(editingTaskId, taskData);
@@ -76,6 +153,52 @@ export default function ProfilePage() {
       <Navbar variant="user" />
 
       <main className={styles.main}>
+
+        {/* ── User Profile Settings ── */}
+        <section className={styles.section} style={{ marginBottom: '2rem' }}>
+          <div className={styles.ledgerHeader}>
+            <h2 className={styles.sectionTitle} style={{ margin: 0 }}>Personal Profile</h2>
+            <button className={styles.updateBtn} onClick={() => setIsProfileFormOpen(!isProfileFormOpen)}>
+              {isProfileFormOpen ? 'CANCEL EDIT' : 'EDIT PROFILE'}
+            </button>
+          </div>
+
+          {profileMessage && (
+            <div style={{ marginTop: '1rem', padding: '10px', backgroundColor: '#d4edda', color: '#155724', borderRadius: '4px', fontSize: '14px' }}>
+              {profileMessage}
+            </div>
+          )}
+
+          {loadingProfile ? (
+            <p style={{ fontSize: '14px', color: '#888', marginTop: '1rem' }}>Loading profile data...</p>
+          ) : isProfileFormOpen ? (
+            <form className={styles.formContainer} style={{ marginTop: '1rem' }} onSubmit={handleProfileSubmit}>
+              <div className={styles.formRow}>
+                <input required name="fullName" placeholder="Full Name" value={profile.fullName} onChange={(e) => setProfile({ ...profile, fullName: e.target.value })} className={styles.formInput} />
+                <input required type="email" name="email" placeholder="Email Address" value={profile.email} onChange={(e) => setProfile({ ...profile, email: e.target.value })} className={styles.formInput} />
+              </div>
+              <div className={styles.formRow}>
+                <input required type="number" step="0.01" name="gwa" placeholder="GWA" value={profile.gwa} onChange={(e) => setProfile({ ...profile, gwa: e.target.value })} className={styles.formInput} />
+                <input required type="number" name="income" placeholder="Annual Income (PHP)" value={profile.income} onChange={(e) => setProfile({ ...profile, income: e.target.value })} className={styles.formInput} />
+                <input required name="course" placeholder="Degree Program" value={profile.course} onChange={(e) => setProfile({ ...profile, course: e.target.value })} className={styles.formInput} />
+              </div>
+              <div className={styles.formActions}>
+                <button type="submit" className={styles.btnSave} disabled={savingProfile}>
+                  {savingProfile ? 'SAVING...' : 'SAVE PROFILE'}
+                </button>
+              </div>
+            </form>
+          ) : (
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', marginTop: '1rem', padding: '1.5rem', backgroundColor: '#f8f9fa', border: '1px solid #eee', borderRadius: '8px', fontSize: '14px', color: '#333' }}>
+              <div><strong style={{ color: '#000', display: 'block', marginBottom: '4px' }}>Full Name</strong> {profile.fullName}</div>
+              <div><strong style={{ color: '#000', display: 'block', marginBottom: '4px' }}>Email</strong> {profile.email}</div>
+              <div><strong style={{ color: '#000', display: 'block', marginBottom: '4px' }}>Current GWA</strong> {profile.gwa}</div>
+              <div><strong style={{ color: '#000', display: 'block', marginBottom: '4px' }}>Annual Income</strong> ₱{Number(profile.income).toLocaleString()}</div>
+              <div><strong style={{ color: '#000', display: 'block', marginBottom: '4px' }}>Degree Program</strong> {profile.course}</div>
+            </div>
+          )}
+        </section>
+
         {/* ── Task Overview ── */}
         <section className={styles.section}>
           <h2 className={styles.sectionTitle}>Task Overview</h2>
@@ -120,7 +243,6 @@ export default function ProfilePage() {
                     <option value="Medium">Medium Priority</option>
                     <option value="High">High Priority</option>
                   </select>
-                  {/* The Dropdown! */}
                   <select value={scholarshipId} onChange={(e) => setScholarshipId(e.target.value)} className={styles.formInput}>
                     <option value="">-- Link to a Grant (Optional) --</option>
                     {savedScholarships.map((s) => (
