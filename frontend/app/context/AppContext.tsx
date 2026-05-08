@@ -46,7 +46,11 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     fetch('http://localhost:8000/api/tracker/tasks/', {
       headers: { 'Authorization': `Bearer ${token}` }
     })
-      .then(res => res.json())
+      .then(async (res) => {
+        if (res.status === 401) throw new Error("Unauthorized");
+        if (!res.ok) throw new Error("Failed to fetch tasks");
+        return res.json();
+      })
       .then(data => {
         const formattedTasks = data.map((t: any) => ({
           id: t.id.toString(),
@@ -58,7 +62,13 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         }));
         setTasks(formattedTasks);
       })
-      .catch(err => console.error("Failed to load tasks", err));
+      .catch(err => {
+        console.error(err);
+        if (err.message === "Unauthorized") {
+          localStorage.removeItem('accessToken');
+          window.location.href = '/login'; // Auto-logout on dead token
+        }
+      });
 
     // Fetch Bookmarks
     fetch('http://localhost:8000/api/tracker/bookmarks/', {
@@ -66,7 +76,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     })
       .then(res => res.json())
       .then(data => setBookmarks(data))
-      .catch(err => console.error("Failed to load bookmarks", err));
+      .catch(err => console.error(err));
   }, []);
 
   // 3. API Actions
@@ -130,6 +140,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         },
         body: JSON.stringify(payload)
       });
+      
       if (res.ok) {
         const t = await res.json();
         const newTask: Task = {
@@ -141,6 +152,16 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
           urgency: t.urgency,
         };
         setTasks(prev => [newTask, ...prev]);
+      } else {
+        // THIS IS THE NEW ERROR CATCHER
+        const errorData = await res.json();
+        console.error("Backend rejected task:", errorData);
+        alert("Failed to save task. Check console for details.");
+        
+        if (res.status === 401) {
+            localStorage.removeItem('accessToken');
+            window.location.href = '/login';
+        }
       }
     } catch (err) { console.error(err); }
   };
