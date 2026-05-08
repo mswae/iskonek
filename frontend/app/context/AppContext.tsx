@@ -1,17 +1,22 @@
 'use client';
-
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
 export type TaskProgress = 'Not Started' | 'In Progress' | 'Completed';
 export type TaskUrgency = 'Low' | 'Medium' | 'High';
 
 export interface Task {
-  id: string;
+  id: string; 
+  scholarshipId?: string | null;
   title: string;
   requirement: string;
   progress: TaskProgress;
   urgency: TaskUrgency;
-  scholarshipId?: string | null; // For the dropdown linking to a bookmarked scholarship
+}
+
+// Internal type to keep track of the Django Bookmark primary keys
+interface BookmarkRecord {
+  id: number;
+  scholarship: number;
 }
 
 interface AppContextType {
@@ -19,52 +24,187 @@ interface AppContextType {
   toggleBookmark: (id: string) => void;
   tasks: Task[];
   addTask: (task: Omit<Task, 'id'>) => void;
-  updateTask: (id: string, updates: Partial<Task>) => void;
+  updateTask: (id: string, updated: Partial<Task>) => void;
   deleteTask: (id: string) => void;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export function AppProvider({ children }: { children: React.ReactNode }) {
-  const [bookmarkedIds, setBookmarkedIds] = useState<string[]>([]);
+  const [bookmarks, setBookmarks] = useState<BookmarkRecord[]>([]);
   const [tasks, setTasks] = useState<Task[]>([]);
-  const [isLoaded, setIsLoaded] = useState(false);
 
-  // Load from localStorage on initial mount
+  // 1. Derived state to keep the rest of the frontend happy without breaking it
+  const bookmarkedIds = bookmarks.map(b => b.scholarship.toString());
+
+  // 2. Fetch Initial Data from Django on Mount
   useEffect(() => {
-    const savedBookmarks = localStorage.getItem('iskonek_bookmarks');
-    const savedTasks = localStorage.getItem('iskonek_tasks');
-    
-    if (savedBookmarks) setBookmarkedIds(JSON.parse(savedBookmarks));
-    if (savedTasks) setTasks(JSON.parse(savedTasks));
-    setIsLoaded(true);
+    const token = localStorage.getItem('accessToken');
+    if (!token) return;
+
+    // Fetch Tasks
+    fetch('http://localhost:8000/api/tracker/tasks/', {
+      headers: { 'Authorization': `Bearer ${token}` }
+    })
+      .then(async (res) => {
+        if (res.status === 401) throw new Error("Unauthorized");
+        if (!res.ok) throw new Error("Failed to fetch tasks");
+        return res.json();
+      })
+      .then(data => {
+        const formattedTasks = data.map((t: any) => ({
+          id: t.id.toString(),
+          scholarshipId: t.scholarship ? t.scholarship.toString() : null,
+          title: t.title,
+          requirement: t.requirement,
+          progress: t.progress,
+          urgency: t.urgency,
+        }));
+        setTasks(formattedTasks);
+      })
+      .catch(err => {
+        console.error(err);
+        if (err.message === "Unauthorized") {
+          localStorage.removeItem('accessToken');
+          window.location.href = '/login'; // Auto-logout on dead token
+        }
+      });
+
+    // Fetch Bookmarks
+    fetch('http://localhost:8000/api/tracker/bookmarks/', {
+      headers: { 'Authorization': `Bearer ${token}` }
+    })
+      .then(res => res.json())
+      .then(data => setBookmarks(data))
+      .catch(err => console.error(err));
   }, []);
 
-  // Save to localStorage whenever data changes
-  useEffect(() => {
-    if (isLoaded) {
-      localStorage.setItem('iskonek_bookmarks', JSON.stringify(bookmarkedIds));
-      localStorage.setItem('iskonek_tasks', JSON.stringify(tasks));
+  // 3. API Actions
+  const toggleBookmark = async (scholarshipId: string) => {
+    const token = localStorage.getItem('accessToken');
+    if (!token) {
+      alert("Please log in to bookmark scholarships.");
+      return;
     }
-  }, [bookmarkedIds, tasks, isLoaded]);
 
-  const toggleBookmark = (id: string) => {
-    setBookmarkedIds((prev) =>
-      prev.includes(id) ? prev.filter((bookmarkId) => bookmarkId !== id) : [...prev, id]
-    );
+    const existingBookmark = bookmarks.find(b => b.scholarship.toString() === scholarshipId);
+
+    if (existingBookmark) {
+      // It exists -> DELETE it
+      try {
+        const res = await fetch(`http://localhost:8000/api/tracker/bookmarks/${existingBookmark.id}/`, {
+          method: 'DELETE',
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (res.ok) {
+          setBookmarks(prev => prev.filter(b => b.id !== existingBookmark.id));
+        }
+      } catch (err) { console.error(err); }
+    } else {
+      // It doesn't exist -> POST it
+      try {
+        const res = await fetch(`http://localhost:8000/api/tracker/bookmarks/`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({ scholarship: parseInt(scholarshipId) })
+        });
+        if (res.ok) {
+          const newBookmark = await res.json();
+          setBookmarks(prev => [...prev, newBookmark]);
+        }
+      } catch (err) { console.error(err); }
+    }
   };
 
-  const addTask = (taskData: Omit<Task, 'id'>) => {
-    const newTask: Task = { ...taskData, id: crypto.randomUUID() };
-    setTasks((prev) => [...prev, newTask]);
+  const addTask = async (taskData: Omit<Task, 'id'>) => {
+    const token = localStorage.getItem('accessToken');
+    if (!token) return;
+
+    const payload = {
+      title: taskData.title,
+      requirement: taskData.requirement,
+      progress: taskData.progress,
+      urgency: taskData.urgency,
+      scholarship: taskData.scholarshipId ? parseInt(taskData.scholarshipId) : null
+    };
+
+    try {
+      const res = await fetch('http://localhost:8000/api/tracker/tasks/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(payload)
+      });
+      
+      if (res.ok) {
+        const t = await res.json();
+        const newTask: Task = {
+          id: t.id.toString(),
+          scholarshipId: t.scholarship ? t.scholarship.toString() : null,
+          title: t.title,
+          requirement: t.requirement,
+          progress: t.progress,
+          urgency: t.urgency,
+        };
+        setTasks(prev => [newTask, ...prev]);
+      } else {
+        // THIS IS THE NEW ERROR CATCHER
+        const errorData = await res.json();
+        console.error("Backend rejected task:", errorData);
+        alert("Failed to save task. Check console for details.");
+        
+        if (res.status === 401) {
+            localStorage.removeItem('accessToken');
+            window.location.href = '/login';
+        }
+      }
+    } catch (err) { console.error(err); }
   };
 
-  const updateTask = (id: string, updates: Partial<Task>) => {
-    setTasks((prev) => prev.map((t) => (t.id === id ? { ...t, ...updates } : t)));
+  const updateTask = async (id: string, updatedData: Partial<Task>) => {
+    const token = localStorage.getItem('accessToken');
+    if (!token) return;
+
+    // Map frontend 'scholarshipId' to backend 'scholarship' expected field
+    const payload: any = { ...updatedData };
+    if (updatedData.scholarshipId !== undefined) {
+        payload.scholarship = updatedData.scholarshipId ? parseInt(updatedData.scholarshipId) : null;
+        delete payload.scholarshipId;
+    }
+
+    try {
+      const res = await fetch(`http://localhost:8000/api/tracker/tasks/${id}/`, {
+        method: 'PATCH', // We use PATCH to only update the fields that changed
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(payload)
+      });
+      if (res.ok) {
+        setTasks(prev => prev.map(t => t.id === id ? { ...t, ...updatedData } : t));
+      }
+    } catch (err) { console.error(err); }
   };
 
-  const deleteTask = (id: string) => {
-    setTasks((prev) => prev.filter((t) => t.id !== id));
+  const deleteTask = async (id: string) => {
+    const token = localStorage.getItem('accessToken');
+    if (!token) return;
+
+    try {
+      const res = await fetch(`http://localhost:8000/api/tracker/tasks/${id}/`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (res.ok) {
+        setTasks(prev => prev.filter(t => t.id !== id));
+      }
+    } catch (err) { console.error(err); }
   };
 
   return (
@@ -76,7 +216,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
 export function useAppContext() {
   const context = useContext(AppContext);
-  if (context === undefined) {
+  if (!context) {
     throw new Error('useAppContext must be used within an AppProvider');
   }
   return context;

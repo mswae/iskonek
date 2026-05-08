@@ -7,7 +7,7 @@ import styles from './page.module.css';
 export default function HeroPage() {
   return (
     <div className={styles.page}>
-      <Navbar variant="guest" />
+      <Navbar/>
 
       {/* ── HERO SECTION ── */}
       <section className={styles.hero}>

@@ -114,7 +114,7 @@ export default function HomePage() {
 
   return (
     <div className={styles.page}>
-      <Navbar variant="user" />
+      <Navbar />
 
       <main className={styles.main}>
         {/* Page heading */}

@@ -96,3 +96,22 @@
   .navbar { padding: 0 20px; }
   .navLinks { gap: 16px; }
 }
+
+.logoutBtn {
+  background: none;
+  border: 1px solid #e0e0e0;
+  color: var(--text-mid);
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-left: 8px;
+}
+
+.logoutBtn:hover {
+  background: #f5f5f5;
+  color: #dc2626; /* Turn red on hover to indicate destructive action */
+  border-color: #dc2626;
+}

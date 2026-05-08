@@ -7,7 +7,7 @@ import styles from './page.module.css';
 export default function RegisterPage() {
   return (
     <div className={styles.page}>
-      <Navbar variant="guest" />
+      <Navbar />
 
       <main className={styles.main}>
         <div className={styles.header}>

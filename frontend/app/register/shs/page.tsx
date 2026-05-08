@@ -27,6 +27,7 @@ export default function SHSRegisterPage() {
     dob: '',
     sex: '',
     nationality: 'Filipino',
+    income: '',
   });
 
   const [academic, setAcademic] = useState({
@@ -49,6 +50,20 @@ export default function SHSRegisterPage() {
   });
 
   function handleNext() {
+    if (step === 1) {
+      if (!personal.fullName || !personal.dob || !personal.sex || !personal.income) {
+        alert("Please fill in all required Personal fields."); return;
+      }
+    } else if (step === 2) {
+      if (!academic.school || !academic.gpa || !academic.gradeLevel || !academic.strand) {
+        alert("Please fill in all required Academic fields."); return;
+      }
+    } else if (step === 3) {
+      if (!contact.contactNumber) {
+        alert("Contact number is required."); return;
+      }
+    }
+    
     if (step < 4) setStep(step + 1);
     else handleSubmit();
   }
@@ -57,18 +72,48 @@ export default function SHSRegisterPage() {
     if (step > 1) setStep(step - 1);
   }
 
-  function handleSubmit() {
+  async function handleSubmit() {
     setLoading(true);
-    // replace 
-    setTimeout(() => {
+
+    if (account.password !== account.confirmPassword) {
+      alert("Passwords do not match!");
       setLoading(false);
-      setDone(true);
-    }, 1000);
+      return;
+    }
+
+    const payload = {
+      fullName: personal.fullName,
+      email: account.email,
+      password: account.password,
+      gpa: academic.gpa,
+      program: academic.strand, // Map SHS strand to the backend course field
+      income: personal.income || 0,
+    };
+
+    try {
+      const res = await fetch('http://localhost:8000/api/scholarships/register/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+
+      if (res.ok) {
+        setDone(true);
+      } else {
+        const data = await res.json();
+        alert(data.error || "Registration failed. Please try again.");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Server error. Ensure your Django backend is running.");
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
     <div className={styles.page}>
-      <Navbar variant="guest" />
+      <Navbar />
 
       <main className={styles.main}>
         <div className={styles.header}>
@@ -180,6 +225,19 @@ export default function SHSRegisterPage() {
                         className={styles.input}
                       />
                     </div>
+                    <div className={styles.field}>
+                      <label className={styles.label}>
+                        Annual Family Income (PHP)<span className={styles.required}>*</span>
+                      </label>
+                      <input
+                        type="number"
+                        placeholder="e.g. 250000"
+                        value={personal.income}
+                        onChange={(e) => setPersonal({ ...personal, income: e.target.value })}
+                        className={styles.input}
+                        required
+                      />
+                    </div>
                   </div>
                 </>
               )}
@@ -223,11 +281,11 @@ export default function SHSRegisterPage() {
                     <div className={styles.row}>
                       <div className={styles.field}>
                         <label className={styles.label}>
-                          GPA / General Average<span className={styles.required}>*</span>
+                          General Average (Percentage 0-100)<span className={styles.required}>*</span>
                         </label>
                         <input
                           type="number"
-                          placeholder="e.g. 92.5"
+                          placeholder="e.g. 85, 92.5"
                           min="60"
                           max="100"
                           step="0.01"
