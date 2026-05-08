@@ -1,19 +1,51 @@
 // app/home/page.tsx — Scholarship Listings Page
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
-import ScholarshipCard from '../components/ScholarshipCard';
-import { SCHOLARSHIPS } from '../data/scholarships';
+import ScholarshipCard, { Scholarship } from '../components/ScholarshipCard';
+// REMOVE: import { SCHOLARSHIPS } from '../data/scholarships';
 import styles from './page.module.css';
 
 const ITEMS_PER_PAGE = 6;
 
 export default function HomePage() {
+  const [scholarships, setScholarships] = useState<Scholarship[]>([]);
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
+  const [loading, setLoading] = useState(true);
 
-  // 1. Mock Student Profile State
+  // Fetch data from Django on mount
+  useEffect(() => {
+    fetch('http://localhost:8000/api/scholarships/')
+      .then((res) => res.json())
+      .then((data) => {
+        // Map Django's flat snake_case to the frontend's nested format
+        const formattedData: Scholarship[] = data.map((item: any) => ({
+          id: item.id.toString(),
+          title: item.title,
+          tag: item.tag,
+          amount: item.amount,
+          deadline: item.deadline,
+          description: item.description,
+          gradient: item.gradient,
+          link: item.link,
+          bookmarked: item.bookmarked,
+          criteria: {
+            minGwa: item.min_gwa,
+            maxIncome: item.max_income,
+            course: item.course,
+          }
+        }));
+        setScholarships(formattedData);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error("Failed to fetch scholarships:", err);
+        setLoading(false);
+      });
+  }, []);
+
   const [studentProfile, setStudentProfile] = useState({
     gwa: 88,
     income: 250000,
@@ -21,26 +53,60 @@ export default function HomePage() {
   });
 
   // 2. The Matching Algorithm combined with text search
-  const filtered = SCHOLARSHIPS.filter((s) => {
-    // Check text search
-    const matchesSearch =
-      s.title.toLowerCase().includes(search.toLowerCase()) ||
-      s.description.toLowerCase().includes(search.toLowerCase());
-
-    // Failsafe: if a scholarship has no criteria (e.g. malformed data), just use text search
-    if (!s.criteria) return matchesSearch;
-
-    // Check profile criteria
-    const meetsGwa = studentProfile.gwa >= s.criteria.minGwa;
-    const meetsIncome = studentProfile.income <= s.criteria.maxIncome;
+  // Fetch data from Django on mount
+  useEffect(() => {
+    const token = localStorage.getItem('accessToken');
     
-    // Using includes() allows handling compound criteria like 'STEM_BIZ_ED' in Aboitiz
-    const meetsCourse =
-      s.criteria.course === 'ANY' ||
-      s.criteria.course.includes(studentProfile.course);
+    if (!token) {
+      // If no token, bounce them back to login
+      window.location.href = '/login';
+      return;
+    }
 
-    // Must pass search AND all profile requirements
-    return matchesSearch && meetsGwa && meetsIncome && meetsCourse;
+    fetch('http://localhost:8000/api/scholarships/', {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    })
+      .then((res) => {
+        if (res.status === 401) {
+            localStorage.removeItem('accessToken');
+            window.location.href = '/login';
+            throw new Error("Unauthorized");
+        }
+        return res.json();
+      })
+      .then((data) => {
+        const formattedData: Scholarship[] = data.map((item: any) => ({
+          id: item.id.toString(),
+          title: item.title,
+          tag: item.tag,
+          amount: item.amount,
+          deadline: item.deadline,
+          description: item.description,
+          gradient: item.gradient,
+          link: item.link,
+          bookmarked: item.bookmarked,
+          criteria: {
+            minGwa: item.min_gwa,
+            maxIncome: item.max_income,
+            course: item.course,
+          }
+        }));
+        setScholarships(formattedData);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error("Failed to fetch scholarships:", err);
+        setLoading(false);
+      });
+  }, []);
+
+  // ALL strict matching is now done by the Django Backend!
+  // We only run the text search against the pre-filtered results here.
+  const filtered = scholarships.filter((s) => {
+    return s.title.toLowerCase().includes(search.toLowerCase()) ||
+           s.description.toLowerCase().includes(search.toLowerCase());
   });
 
   const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE);
@@ -55,45 +121,7 @@ export default function HomePage() {
         <div className={styles.heading}>
           <h1 className={styles.title}>Scholarship Matching</h1>
           <p className={styles.subtitle}>Find scholarships that match your profile.</p>
-        </div>
-
-        {/* Temporary Test Panel to verify the algorithm */}
-        <div style={{ background: '#f8f9fa', padding: '1rem', borderRadius: '8px', marginBottom: '2rem', border: '1px solid #ddd', color: '#333' }}>
-          <h4 style={{ marginBottom: '10px', fontSize: '14px', textTransform: 'uppercase', letterSpacing: '1px' }}>Algorithm Tester</h4>
-          <div style={{ display: 'flex', gap: '1.5rem', flexWrap: 'wrap', alignItems: 'center' }}>
-            <label style={{ display: 'flex', flexDirection: 'column', gap: '4px', fontSize: '14px' }}>
-              GWA:
-              <input 
-                type="number" 
-                value={studentProfile.gwa} 
-                onChange={(e) => setStudentProfile({ ...studentProfile, gwa: Number(e.target.value) })}
-                style={{ padding: '6px', border: '1px solid #ccc', borderRadius: '4px' }}
-              />
-            </label>
-            <label style={{ display: 'flex', flexDirection: 'column', gap: '4px', fontSize: '14px' }}>
-              Household Income:
-              <input 
-                type="number" 
-                value={studentProfile.income} 
-                onChange={(e) => setStudentProfile({ ...studentProfile, income: Number(e.target.value) })}
-                style={{ padding: '6px', border: '1px solid #ccc', borderRadius: '4px' }}
-              />
-            </label>
-            <label style={{ display: 'flex', flexDirection: 'column', gap: '4px', fontSize: '14px' }}>
-              Course Category:
-              <select 
-                value={studentProfile.course} 
-                onChange={(e) => setStudentProfile({ ...studentProfile, course: e.target.value })}
-                style={{ padding: '6px', border: '1px solid #ccc', borderRadius: '4px' }}
-              >
-                <option value="STEM">STEM</option>
-                <option value="TECH_ED">TECH_ED</option>
-                <option value="ARTS">ARTS</option>
-                <option value="HUMSS">HUMSS</option>
-              </select>
-            </label>
-          </div>
-        </div>
+        </div>  
 
         {/* Search + Filter bar */}
         <div className={styles.searchRow}>

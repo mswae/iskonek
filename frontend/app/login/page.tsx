@@ -11,13 +11,32 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
-    // Simulate login — redirect to /home after 800ms
-    setTimeout(() => {
-      router.push('/home');
-    }, 800);
+
+    try {
+      const res = await fetch('http://localhost:8000/api/token/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        // We use 'email' for the username field because of how we built the Register API
+        body: JSON.stringify({ username: email, password: password }), 
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        // Store the token in the browser
+        localStorage.setItem('accessToken', data.access);
+        router.push('/home');
+      } else {
+        alert('Invalid email or password.');
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Server error. Is Django running?');
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (

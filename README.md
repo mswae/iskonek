@@ -1,72 +1,103 @@
-# ISKOnek
+# iSkonek
 
-> **Status:** Early Development (Environment Scaffolding)
-
-ISKOnek is a web-based platform designed to consolidate scholarship opportunities and automatically match Filipino students to funding based on their academic profile and eligibility.
-
-Currently, the project is in the initial development phase, focusing on establishing a decoupled architecture between a React-based UI and a Python API.
+A centralized web-based scholarship matching platform for Filipino students.
 
 ## Tech Stack
-* **Frontend:** Next.js (React 18/19), Tailwind CSS v4
-* **Backend:** Django, Django REST Framework (DRF)
-* **Database:** PostgreSQL (Planned)
 
-## Repository Structure
-The project uses a strict decoupled architecture. Both servers must be running simultaneously for the application to function.
+* **Frontend:** Next.js 14, React, TypeScript
+* **Backend:** Django, Django Rest Framework, JWT Authentication
+* **Database:** PostgreSQL
 
-```text
-iskonek/
-├── backend/      # Django API server (Port 8000)
-└── frontend/     # Next.js UI client (Port 3000)
-```
+---
 
-## Getting Started (Local Development)
+## 🚀 How to Run Locally
 
 ### Prerequisites
-* [Node.js](https://nodejs.org/) (for the frontend)
-* [Python 3.x](https://www.python.org/) (for the backend)
 
-### 1. Setting up the Frontend
-Navigate to the frontend directory, install the Node dependencies, and start the Next.js development server.
+Before you begin, ensure you have the following installed on your machine:
+
+* [Node.js](https://nodejs.org/) (v18 or higher)
+* [Python](https://www.python.org/downloads/) (v3.10 or higher)
+* [PostgreSQL](https://www.postgresql.org/download/)
+
+### 1. Database Setup
+
+1. Open pgAdmin or your Postgres CLI.
+2. Create a new, empty database named exactly `iskonek`.
+
+### 2. Backend Setup
+
+Open a terminal and navigate to the backend folder:
+
+```bash
+cd backend
+```
+
+Create a virtual environment and activate it:
+
+```bash
+# On Windows:
+python -m venv venv
+venv\Scripts\activate
+
+# On Mac/Linux:
+python3 -m venv venv
+source venv/bin/activate
+```
+
+Install the required Python packages:
+
+```bash
+pip install -r requirements.txt
+```
+
+Set up your environment variables:
+
+1. Copy the `.env.example` file and rename it to `.env`.
+2. Open `.env` and fill in your local PostgreSQL password.
+
+Run the database migrations to build the tables:
+
+```bash
+python manage.py migrate
+```
+
+Start the Django server:
+
+```bash
+python manage.py runserver
+```
+
+The backend API is now running at `http://localhost:8000`.
+
+### 3. Frontend Setup
+
+Open a new, separate terminal and navigate to the frontend folder:
 
 ```bash
 cd frontend
+```
+
+Install the Node dependencies:
+
+```bash
 npm install
+```
+
+Start the Next.js development server:
+
+```bash
 npm run dev
 ```
 
-The frontend will be available at `http://localhost:3000`.
+The frontend is now running at `http://localhost:3000`.
 
-### 2. Setting up the Backend
-Open a new terminal window, navigate to the backend directory, create an isolated Python environment, and start the Django server.
+### 4. Push the Updates
 
-**For Windows:**
+Open your root terminal and run:
+
 ```bash
-cd backend
-python -m venv venv
-.\venv\Scripts\activate
-pip install django djangorestframework django-cors-headers
-python manage.py runserver
+git add .
+git commit -m "docs: add requirements.txt, .env.example, and setup instructions to README"
+git push
 ```
-
-**For Mac/Linux:**
-```bash
-cd backend
-python3 -m venv venv
-source venv/bin/activate
-pip install django djangorestframework django-cors-headers
-python manage.py runserver
-```
-
-The backend API will be available at `http://localhost:8000`.
-
-> **Note:** Always ensure your virtual environment `(venv)` is activated before running backend commands.
-
-## Current Development Goals
-* [In Progress] Database modeling for Student Profiles and Scholarship criteria.
-* [In Progress] Configuring CORS headers to allow `localhost:3000` to fetch data from `localhost:8000`.
-* [Pending] Building out the core React component library.
-* [Pending] Implementing the matching algorithm via Django views.
-
-## Proponents
-Althea Nicole S. Cestina, John Benedict P. Baladia, Arwen Fajardo, Alezandra Hertz G. Fresnido, Kirsten Gail A. Querubin
