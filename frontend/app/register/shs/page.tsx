@@ -27,6 +27,7 @@ export default function SHSRegisterPage() {
     dob: '',
     sex: '',
     nationality: 'Filipino',
+    income: '',
   });
 
   const [academic, setAcademic] = useState({
@@ -57,13 +58,43 @@ export default function SHSRegisterPage() {
     if (step > 1) setStep(step - 1);
   }
 
-  function handleSubmit() {
+  async function handleSubmit() {
     setLoading(true);
-    // replace 
-    setTimeout(() => {
+
+    if (account.password !== account.confirmPassword) {
+      alert("Passwords do not match!");
       setLoading(false);
-      setDone(true);
-    }, 1000);
+      return;
+    }
+
+    const payload = {
+      fullName: personal.fullName,
+      email: account.email,
+      password: account.password,
+      gpa: academic.gpa,
+      program: academic.strand, // Map SHS strand to the backend course field
+      income: personal.income || 0,
+    };
+
+    try {
+      const res = await fetch('http://localhost:8000/api/scholarships/register/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+
+      if (res.ok) {
+        setDone(true);
+      } else {
+        const data = await res.json();
+        alert(data.error || "Registration failed. Please try again.");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Server error. Ensure your Django backend is running.");
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -178,6 +209,19 @@ export default function SHSRegisterPage() {
                         value={personal.nationality}
                         onChange={(e) => setPersonal({ ...personal, nationality: e.target.value })}
                         className={styles.input}
+                      />
+                    </div>
+                    <div className={styles.field}>
+                      <label className={styles.label}>
+                        Annual Family Income (PHP)<span className={styles.required}>*</span>
+                      </label>
+                      <input
+                        type="number"
+                        placeholder="e.g. 250000"
+                        value={personal.income}
+                        onChange={(e) => setPersonal({ ...personal, income: e.target.value })}
+                        className={styles.input}
+                        required
                       />
                     </div>
                   </div>
