@@ -1,4 +1,4 @@
-# iSkonek
+# ISKOnek
 
 A centralized web-based scholarship matching platform for Filipino students.
 
@@ -91,13 +91,3 @@ npm run dev
 ```
 
 The frontend is now running at `http://localhost:3000`.
-
-### 4. Push the Updates
-
-Open your root terminal and run:
-
-```bash
-git add .
-git commit -m "docs: add requirements.txt, .env.example, and setup instructions to README"
-git push
-```
