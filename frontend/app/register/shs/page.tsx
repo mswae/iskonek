@@ -50,6 +50,20 @@ export default function SHSRegisterPage() {
   });
 
   function handleNext() {
+    if (step === 1) {
+      if (!personal.fullName || !personal.dob || !personal.sex || !personal.income) {
+        alert("Please fill in all required Personal fields."); return;
+      }
+    } else if (step === 2) {
+      if (!academic.school || !academic.gpa || !academic.gradeLevel || !academic.strand) {
+        alert("Please fill in all required Academic fields."); return;
+      }
+    } else if (step === 3) {
+      if (!contact.contactNumber) {
+        alert("Contact number is required."); return;
+      }
+    }
+    
     if (step < 4) setStep(step + 1);
     else handleSubmit();
   }
@@ -99,7 +113,7 @@ export default function SHSRegisterPage() {
 
   return (
     <div className={styles.page}>
-      <Navbar variant="guest" />
+      <Navbar />
 
       <main className={styles.main}>
         <div className={styles.header}>
@@ -267,11 +281,11 @@ export default function SHSRegisterPage() {
                     <div className={styles.row}>
                       <div className={styles.field}>
                         <label className={styles.label}>
-                          GPA / General Average<span className={styles.required}>*</span>
+                          General Average (Percentage 0-100)<span className={styles.required}>*</span>
                         </label>
                         <input
                           type="number"
-                          placeholder="e.g. 92.5"
+                          placeholder="e.g. 85, 92.5"
                           min="60"
                           max="100"
                           step="0.01"

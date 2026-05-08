@@ -1,32 +1,40 @@
-// app/components/Navbar.tsx — Shared navigation bar
 'use client';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import styles from './Navbar.module.css';
 
-interface NavbarProps {
-  /** 'guest' shows Log In button; 'user' shows notification + avatar */
-  variant?: 'guest' | 'user';
-}
-
-export default function Navbar({ variant = 'guest' }: NavbarProps) {
+export default function Navbar() {
   const pathname = usePathname();
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
+  // Check for JWT token on mount
+  useEffect(() => {
+    setMounted(true);
+    const token = localStorage.getItem('accessToken');
+    setIsLoggedIn(!!token);
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem('accessToken');
+    window.location.href = '/'; // Kick them back to the landing page
+  };
+
+  // If logged in, clicking "Home" should go to /home dashboard. If not, go to landing /
   const navLinks = [
-    { label: 'Home', href: '/home' },
+    { label: 'Home', href: isLoggedIn ? '/home' : '/' },
     { label: 'About', href: '/about' },
     { label: 'Contact', href: '#contact' },
   ];
 
   return (
     <nav className={styles.navbar}>
-      {/* Logo */}
       <Link href="/" className={styles.logo}>
         <IskonekLogo />
         <span className={styles.logoText}>iskonek</span>
       </Link>
 
-      {/* Nav links */}
       <ul className={styles.navLinks}>
         {navLinks.map((link) => (
           <li key={link.href}>
@@ -40,26 +48,30 @@ export default function Navbar({ variant = 'guest' }: NavbarProps) {
         ))}
       </ul>
 
-      {/* CTA */}
       <div className={styles.navCta}>
-        {variant === 'guest' ? (
-          <Link href="/login" className={styles.loginBtn}>Log In</Link>
-        ) : (
-          <div className={styles.userActions}>
-            <button className={styles.iconBtn} aria-label="Notifications">
-              <BellIcon />
-            </button>
-            <Link href="/profile" className={styles.avatarBtn} aria-label="Profile">
-              <AvatarIcon />
-            </Link>
-          </div>
+        {/* Wait until mounted to prevent React hydration errors between server and client */}
+        {mounted && (
+          !isLoggedIn ? (
+            <Link href="/login" className={styles.loginBtn}>Log In</Link>
+          ) : (
+            <div className={styles.userActions}>
+              <button className={styles.iconBtn} aria-label="Notifications">
+                <BellIcon />
+              </button>
+              <Link href="/profile" className={styles.avatarBtn} aria-label="Profile">
+                <AvatarIcon />
+              </Link>
+              <button onClick={handleLogout} className={styles.logoutBtn}>
+                Log Out
+              </button>
+            </div>
+          )
         )}
       </div>
     </nav>
   );
 }
 
-/* ── Inline SVG icons ── */
 function IskonekLogo() {
   return (
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none">

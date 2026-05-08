@@ -13,17 +13,24 @@ class ScholarshipListView(ListAPIView):
     permission_classes = [IsAuthenticated] # Locks down the endpoint
 
     def get_queryset(self):
-        # Extract the profile of the user holding the JWT
         try:
             profile = self.request.user.studentprofile
         except:
             return Scholarship.objects.none()
 
+        # Clean the profile course text (remove BS/AB prefixes for broader matching)
+        clean_course = profile.course.replace("BS ", "").replace("AB ", "").strip()
+
+        # 1. GWA (Percentage): Scholarship requirement must be <= Student's Grade (e.g., 85 <= 92)
+        # 2. Income: Scholarship max income must be >= Student's Income
+        # 3. Course: Fuzzy matching using Q objects
         queryset = Scholarship.objects.filter(
             min_gwa__lte=profile.gwa,
             max_income__gte=profile.income
         ).filter(
-            Q(course='ANY') | Q(course__icontains=profile.course)
+            Q(course__icontains='ANY') | 
+            Q(course__icontains=profile.course) | 
+            Q(course__icontains=clean_course)
         )
 
         return queryset
