@@ -7,6 +7,7 @@ from django.contrib.auth.models import User
 from .models import Scholarship, StudentProfile
 from .serializers import ScholarshipSerializer
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAdminUser
 
 class ScholarshipListView(ListAPIView):
     serializer_class = ScholarshipSerializer
@@ -120,5 +121,38 @@ class ProfileView(APIView):
             profile.save()
 
             return Response({"message": "Profile updated successfully!"}, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+    
+
+class AdminScholarshipView(APIView):
+    # This ensures only superusers/staff can access this endpoint
+    permission_classes = [IsAuthenticated, IsAdminUser]
+
+    def post(self, request):
+        data = request.data
+
+        try:
+            # Create the scholarship using the data from the frontend form
+            scholarship = Scholarship.objects.create(
+                title=data.get('title'),
+                tag=data.get('tag'),
+                amount=data.get('amount'),
+                deadline=data.get('deadline'),
+                description=data.get('description'),
+                gradient=data.get('gradient', 'linear-gradient(135deg, #2d8c62 0%, #1a6648 100%)'), # Default gradient
+                min_gwa=float(data.get('min_gwa', 75.0)),
+                max_income=int(data.get('max_income', 9999999)),
+                course=data.get('course', 'ALL PROGRAMS'),
+                link=data.get('link', '')
+            )
+            
+            # Serialize the new scholarship to return it in the response
+            serializer = ScholarshipSerializer(scholarship)
+            return Response(
+                {"message": "Scholarship added successfully!", "scholarship": serializer.data}, 
+                status=status.HTTP_201_CREATED
+            )
+            
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)

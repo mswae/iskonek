@@ -1,13 +1,20 @@
 // app/home/page.tsx — Scholarship Listings Page
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import ScholarshipCard, { Scholarship } from '../components/ScholarshipCard';
-// REMOVE: import { SCHOLARSHIPS } from '../data/scholarships';
 import styles from './page.module.css';
 
 const ITEMS_PER_PAGE = 6;
+
+const PROGRAMS = [
+  'STEM', 'ABM', 'HUMSS', 'GAS', 'TVL', 'Sports Track', 'Arts & Design',
+  'BS Computer Science', 'BS Information Technology', 'BS Information Systems',
+  'BS Computer Engineering', 'BS Civil Engineering', 'BS Electrical Engineering',
+  'BS Mechanical Engineering', 'BS Nursing', 'BS Education', 
+  'BS Business Administration', 'AB Communication', 'AB Political Science', 'Other'
+];
 
 export default function HomePage() {
   const [scholarships, setScholarships] = useState<Scholarship[]>([]);
@@ -15,48 +22,17 @@ export default function HomePage() {
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
 
+  // Filter states for "What If" scenarios
+  const [showFilters, setShowFilters] = useState(false);
+  const [filterGwa, setFilterGwa] = useState('');
+  const [filterIncome, setFilterIncome] = useState('');
+  const [filterCourse, setFilterCourse] = useState('');
+
   const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
-  // Fetch data from Django on mount
-  useEffect(() => {
-    fetch(`${API_URL}/api/scholarships/`)
-      .then((res) => res.json())
-      .then((data) => {
-        // Map Django's flat snake_case to the frontend's nested format
-        const formattedData: Scholarship[] = data.map((item: any) => ({
-          id: item.id.toString(),
-          title: item.title,
-          tag: item.tag,
-          amount: item.amount,
-          deadline: item.deadline,
-          description: item.description,
-          gradient: item.gradient,
-          link: item.link,
-          bookmarked: item.bookmarked,
-          criteria: {
-            minGwa: item.min_gwa,
-            maxIncome: item.max_income,
-            course: item.course,
-          }
-        }));
-        setScholarships(formattedData);
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.error("Failed to fetch scholarships:", err);
-        setLoading(false);
-      });
-  }, []);
-
-  const [studentProfile, setStudentProfile] = useState({
-    gwa: 88,
-    income: 250000,
-    course: 'STEM',
-  });
-
-  // 2. The Matching Algorithm combined with text search
-  // Fetch data from Django on mount
-  useEffect(() => {
+  // Fetch data from Django
+  const fetchScholarships = useCallback((gwa?: string, income?: string, course?: string) => {
+    setLoading(true);
     const token = localStorage.getItem('accessToken');
     
     if (!token) {
@@ -65,7 +41,13 @@ export default function HomePage() {
       return;
     }
 
-    fetch(`${API_URL}/api/scholarships/`, {
+    // Build URL with query params if they exist
+    const url = new URL(`${API_URL}/api/scholarships/`);
+    if (gwa) url.searchParams.append('gwa', gwa);
+    if (income) url.searchParams.append('income', income);
+    if (course) url.searchParams.append('course', course);
+
+    fetch(url.toString(), {
       headers: {
         'Authorization': `Bearer ${token}`
       }
@@ -102,10 +84,27 @@ export default function HomePage() {
         console.error("Failed to fetch scholarships:", err);
         setLoading(false);
       });
-  }, []);
+  }, [API_URL]);
 
-  // ALL strict matching is now done by the Django Backend!
-  // We only run the text search against the pre-filtered results here.
+  // Initial load uses real profile
+  useEffect(() => {
+    fetchScholarships();
+  }, [fetchScholarships]);
+
+  const handleApplyFilters = () => {
+    fetchScholarships(filterGwa, filterIncome, filterCourse);
+    setPage(1);
+  };
+
+  const handleClearFilters = () => {
+    setFilterGwa('');
+    setFilterIncome('');
+    setFilterCourse('');
+    fetchScholarships(); // Fetches default profile settings
+    setPage(1);
+  };
+
+  // Run the text search against the backend results
   const filtered = scholarships.filter((s) => {
     return s.title.toLowerCase().includes(search.toLowerCase()) ||
            s.description.toLowerCase().includes(search.toLowerCase());
@@ -137,21 +136,78 @@ export default function HomePage() {
               className={styles.searchInput}
             />
           </div>
-          <button className={styles.filterBtn}>
+          <button 
+            className={styles.filterBtn} 
+            onClick={() => setShowFilters(!showFilters)}
+          >
             <FilterIcon />
-            Filter
+            {showFilters ? 'Hide Options' : 'Filters'}
           </button>
         </div>
 
+        {/* The "What If" Filter Panel */}
+        {showFilters && (
+          <div style={{ backgroundColor: '#fff', padding: '1rem', borderRadius: '8px', marginBottom: '1.5rem', border: '1px solid #eaeaea', display: 'flex', gap: '1rem', flexWrap: 'wrap', alignItems: 'flex-end' }}>
+             <div style={{ display: 'flex', flexDirection: 'column', gap: '5px', flex: '1', minWidth: '120px' }}>
+                <label style={{ fontSize: '12px', fontWeight: 'bold', color: '#555' }}>Simulated GWA</label>
+                <input 
+                  type="number" 
+                  step="0.01" 
+                  placeholder="e.g. 95" 
+                  value={filterGwa} 
+                  onChange={e => setFilterGwa(e.target.value)} 
+                  style={{ padding: '8px', border: '1px solid #ccc', borderRadius: '4px', fontSize: '14px' }} 
+                />
+             </div>
+             <div style={{ display: 'flex', flexDirection: 'column', gap: '5px', flex: '1', minWidth: '150px' }}>
+                <label style={{ fontSize: '12px', fontWeight: 'bold', color: '#555' }}>Simulated Income</label>
+                <input 
+                  type="number" 
+                  placeholder="e.g. 150000" 
+                  value={filterIncome} 
+                  onChange={e => setFilterIncome(e.target.value)} 
+                  style={{ padding: '8px', border: '1px solid #ccc', borderRadius: '4px', fontSize: '14px' }} 
+                />
+             </div>
+             <div style={{ display: 'flex', flexDirection: 'column', gap: '5px', flex: '2', minWidth: '200px' }}>
+                <label style={{ fontSize: '12px', fontWeight: 'bold', color: '#555' }}>Simulated Program</label>
+                <select 
+                  value={filterCourse} 
+                  onChange={e => setFilterCourse(e.target.value)} 
+                  style={{ padding: '8px', border: '1px solid #ccc', borderRadius: '4px', backgroundColor: 'white', fontSize: '14px' }}
+                >
+                   <option value="">-- Select a Program --</option>
+                   {PROGRAMS.map(p => <option key={p} value={p}>{p}</option>)}
+                </select>
+             </div>
+             <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
+                <button 
+                  onClick={handleClearFilters} 
+                  style={{ padding: '8px 16px', border: '1px solid #ccc', backgroundColor: '#f9f9f9', borderRadius: '4px', cursor: 'pointer', fontSize: '14px' }}
+                >
+                  Clear
+                </button>
+                <button 
+                  onClick={handleApplyFilters} 
+                  style={{ padding: '8px 16px', border: 'none', backgroundColor: '#d4622a', color: 'white', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold', fontSize: '14px' }}
+                >
+                  Apply
+                </button>
+             </div>
+          </div>
+        )}
+
         {/* Scholarship grid */}
-        {visible.length > 0 ? (
+        {loading ? (
+          <p className={styles.empty}>Loading scholarships...</p>
+        ) : visible.length > 0 ? (
           <div className={styles.grid}>
             {visible.map((s) => (
               <ScholarshipCard key={s.id} scholarship={s} />
             ))}
           </div>
         ) : (
-          <p className={styles.empty}>No scholarships match your current profile.</p>
+          <p className={styles.empty}>No scholarships match these criteria.</p>
         )}
 
         {/* Pagination */}

@@ -1,10 +1,22 @@
 // app/page.tsx — Hero / Landing Page
+'use client';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import styles from './page.module.css';
 
 export default function HeroPage() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    // Check if the user has an active token in their browser
+    const token = localStorage.getItem('accessToken');
+    if (token) {
+      setIsLoggedIn(true);
+    }
+  }, []);
+
   return (
     <div className={styles.page}>
       <Navbar/>
@@ -37,8 +49,14 @@ export default function HeroPage() {
               Consolidating scholarship opportunities and matches Filipino Senior High School and Undergraduate Students.
             </p>
             <div className={styles.ctaBtns}>
-              <Link href="/register" className={styles.signupBtn}>Sign Up</Link>
-              <Link href="/login" className={styles.loginBtnHero}>Log In</Link>
+              {isLoggedIn ? (
+                <Link href="/home" className={styles.signupBtn}>Go to Dashboard</Link>
+              ) : (
+                <>
+                  <Link href="/register" className={styles.signupBtn}>Sign Up</Link>
+                  <Link href="/login" className={styles.loginBtnHero}>Log In</Link>
+                </>
+              )}
             </div>
           </div>
         </div>

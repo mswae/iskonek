@@ -7,10 +7,7 @@ import ScholarshipCard, { Scholarship } from '../components/ScholarshipCard';
 import { useAppContext, Task, TaskProgress, TaskUrgency } from '../context/AppContext';
 import styles from './page.module.css';
 
-const CALENDAR_DAYS = Array.from({ length: 31 }, (_, i) => i + 1);
 const CALENDAR_HEADERS = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
-const MAY_OFFSET = 4;
-const TODAY = 29;
 
 export default function ProfilePage() {
   const { bookmarkedIds, tasks, addTask, updateTask, deleteTask } = useAppContext();
@@ -51,6 +48,9 @@ export default function ProfilePage() {
   const [progress, setProgress] = useState<TaskProgress>('Not Started');
   const [urgency, setUrgency] = useState<TaskUrgency>('Medium');
   const [scholarshipId, setScholarshipId] = useState(''); 
+
+  // ── Dynamic Calendar State ──
+  const [currentDate, setCurrentDate] = useState(new Date());
 
   // Fetch the user data and all scholarships from Django on mount
   useEffect(() => {
@@ -179,6 +179,37 @@ export default function ProfilePage() {
     setIsFormOpen(false);
   };
 
+  // ── Dynamic Calendar Math ──
+  const handlePrevMonth = () => {
+    setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1));
+  };
+
+  const handleNextMonth = () => {
+    setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1));
+  };
+
+  const currentYear = currentDate.getFullYear();
+  const currentMonthIdx = currentDate.getMonth();
+  const currentMonthName = currentDate.toLocaleString('default', { month: 'long' }).toUpperCase();
+  
+  const actualNow = new Date();
+  const isCurrentMonthView = actualNow.getFullYear() === currentYear && actualNow.getMonth() === currentMonthIdx;
+  const todayDate = actualNow.getDate();
+
+  const daysInMonth = new Date(currentYear, currentMonthIdx + 1, 0).getDate();
+  const firstDayOffset = new Date(currentYear, currentMonthIdx, 1).getDay();
+  const calendarDays = Array.from({ length: daysInMonth }, (_, i) => i + 1);
+
+  // Extract dates that match deadlines for saved scholarships in the current view
+  const deadlineDays = savedScholarships.map(s => {
+    if (!s.deadline) return null;
+    const d = new Date(s.deadline);
+    if (d.getFullYear() === currentYear && d.getMonth() === currentMonthIdx) {
+      return d.getDate();
+    }
+    return null;
+  }).filter((d): d is number => d !== null);
+
   return (
     <div className={styles.page}>
       <Navbar />
@@ -301,7 +332,6 @@ export default function ProfilePage() {
                   <tr><td colSpan={4} style={{ textAlign: 'center', padding: '20px', color: '#888', fontSize: '12px' }}>No tasks added yet. Add one above.</td></tr>
                 ) : (
                   tasks.map((task) => {
-                    // Find the linked scholarship to get its tag
                     const linkedScholarship = savedScholarships.find((s) => s.id === task.scholarshipId);
                     
                     return (
@@ -310,7 +340,6 @@ export default function ProfilePage() {
                           <p className={styles.docName}>{task.title}</p>
                           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                             <p className={styles.docSub}>{task.requirement}</p>
-                            {/* Render the badge if it exists */}
                             {linkedScholarship && (
                               <span className={styles.badgeScholarship}>📌 {linkedScholarship.tag}</span>
                             )}
@@ -344,21 +373,37 @@ export default function ProfilePage() {
             </table>
           </section>
 
-          {/* Mini Calendar */}
+          {/* Dynamic Calendar */}
           <section className={styles.calendar}>
             <div className={styles.calHeader}>
-              <span className={styles.calMonth}>MAY 2025</span>
+              <span className={styles.calMonth}>{currentMonthName} {currentYear}</span>
               <div className={styles.calNav}>
-                <button>‹</button>
-                <button>›</button>
+                <button type="button" onClick={handlePrevMonth}>‹</button>
+                <button type="button" onClick={handleNextMonth}>›</button>
               </div>
             </div>
             <div className={styles.calGrid}>
-              {CALENDAR_HEADERS.map((d, i) => <span key={i} className={styles.calDayName}>{d}</span>)}
-              {Array.from({ length: MAY_OFFSET }).map((_, i) => <span key={`empty-${i}`} />)}
-              {CALENDAR_DAYS.map((d) => (
-                <span key={d} className={`${styles.calDay} ${d === TODAY ? styles.calToday : ''}`}>{d}</span>
-              ))}
+              {CALENDAR_HEADERS.map((d, i) => <span key={`header-${i}`} className={styles.calDayName}>{d}</span>)}
+              
+              {/* Empty spaces for days before the 1st of the month */}
+              {Array.from({ length: firstDayOffset }).map((_, i) => <span key={`empty-${i}`} />)}
+              
+              {/* Actual days of the month */}
+              {calendarDays.map((d) => {
+                const isToday = isCurrentMonthView && d === todayDate;
+                const hasDeadline = deadlineDays.includes(d);
+                
+                return (
+                  <span 
+                    key={`day-${d}`} 
+                    className={`${styles.calDay} ${isToday ? styles.calToday : ''}`}
+                    style={hasDeadline && !isToday ? { color: '#dc2626', fontWeight: '900', borderBottom: '2px solid #dc2626' } : {}}
+                    title={hasDeadline ? 'Scholarship Deadline!' : undefined}
+                  >
+                    {d}
+                  </span>
+                );
+              })}
             </div>
           </section>
         </div>
