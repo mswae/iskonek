@@ -18,18 +18,28 @@ class ScholarshipListView(ListAPIView):
         except:
             return Scholarship.objects.none()
 
-        # Clean the profile course text (remove BS/AB prefixes for broader matching)
-        clean_course = profile.course.replace("BS ", "").replace("AB ", "").strip()
+        # 1. Look for custom filter parameters in the URL, otherwise fallback to the user's real profile
+        gwa_param = self.request.query_params.get('gwa')
+        income_param = self.request.query_params.get('income')
+        course_param = self.request.query_params.get('course')
 
-        # 1. GWA (Percentage): Scholarship requirement must be <= Student's Grade (e.g., 85 <= 92)
-        # 2. Income: Scholarship max income must be >= Student's Income
-        # 3. Course: Fuzzy matching using Q objects
+        current_gwa = float(gwa_param) if gwa_param else profile.gwa
+        current_income = int(income_param) if income_param else profile.income
+        current_course = course_param if course_param else profile.course
+
+        # Clean the course text (remove BS/AB prefixes for broader matching)
+        clean_course = current_course.replace("BS ", "").replace("AB ", "").strip()
+
+        # 2. GWA (Percentage): Scholarship requirement must be <= current grade
+        # 3. Income: Scholarship max income must be >= current income
+        # 4. Course: Fuzzy matching using Q objects
         queryset = Scholarship.objects.filter(
-            min_gwa__lte=profile.gwa,
-            max_income__gte=profile.income
+            min_gwa__lte=current_gwa,
+            max_income__gte=current_income
         ).filter(
             Q(course__icontains='ANY') | 
-            Q(course__icontains=profile.course) | 
+            Q(course__icontains='ALL PROGRAMS') | 
+            Q(course__icontains=current_course) | 
             Q(course__icontains=clean_course)
         )
 
