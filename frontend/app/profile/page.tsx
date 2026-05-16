@@ -15,6 +15,7 @@ const TODAY = 29;
 
 export default function ProfilePage() {
   const { bookmarkedIds, tasks, addTask, updateTask, deleteTask } = useAppContext();
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
   
   // Dynamically load only bookmarked scholarships
   const savedScholarships = SCHOLARSHIPS.filter((s) => bookmarkedIds.includes(s.id));
@@ -57,7 +58,7 @@ export default function ProfilePage() {
       return;
     }
 
-    fetch('http://localhost:8000/api/scholarships/profile/', {
+    fetch(`${API_URL}/api/scholarships/profile/`, {
       headers: { 'Authorization': `Bearer ${token}` }
     })
       .then(res => {
@@ -90,7 +91,7 @@ export default function ProfilePage() {
     const token = localStorage.getItem('accessToken');
 
     try {
-      const res = await fetch('http://localhost:8000/api/scholarships/profile/', {
+      const res = await fetch(`${API_URL}/api/scholarships/profile/`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

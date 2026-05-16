@@ -15,9 +15,11 @@ export default function HomePage() {
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
 
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+
   // Fetch data from Django on mount
   useEffect(() => {
-    fetch('http://localhost:8000/api/scholarships/')
+    fetch(`${API_URL}/api/scholarships/`)
       .then((res) => res.json())
       .then((data) => {
         // Map Django's flat snake_case to the frontend's nested format
@@ -63,7 +65,7 @@ export default function HomePage() {
       return;
     }
 
-    fetch('http://localhost:8000/api/scholarships/', {
+    fetch(`${API_URL}/api/scholarships/`, {
       headers: {
         'Authorization': `Bearer ${token}`
       }
