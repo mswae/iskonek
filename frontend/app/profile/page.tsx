@@ -3,8 +3,7 @@
 import { useState, useEffect } from 'react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
-import ScholarshipCard from '../components/ScholarshipCard';
-import { SCHOLARSHIPS } from '../data/scholarships';
+import ScholarshipCard, { Scholarship } from '../components/ScholarshipCard';
 import { useAppContext, Task, TaskProgress, TaskUrgency } from '../context/AppContext';
 import styles from './page.module.css';
 
@@ -17,8 +16,11 @@ export default function ProfilePage() {
   const { bookmarkedIds, tasks, addTask, updateTask, deleteTask } = useAppContext();
   const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
   
-  // Dynamically load only bookmarked scholarships
-  const savedScholarships = SCHOLARSHIPS.filter((s) => bookmarkedIds.includes(s.id));
+  // State to hold the live scholarships from the backend
+  const [allScholarships, setAllScholarships] = useState<Scholarship[]>([]);
+
+  // Dynamically load only bookmarked scholarships from the live database
+  const savedScholarships = allScholarships.filter((s) => bookmarkedIds.includes(s.id));
 
   // Dynamic Task Stats based on your global tasks
   const TASK_STATS = [
@@ -50,7 +52,7 @@ export default function ProfilePage() {
   const [urgency, setUrgency] = useState<TaskUrgency>('Medium');
   const [scholarshipId, setScholarshipId] = useState(''); 
 
-  // Fetch the user data from Django on mount
+  // Fetch the user data and all scholarships from Django on mount
   useEffect(() => {
     const token = localStorage.getItem('accessToken');
     if (!token) {
@@ -58,6 +60,7 @@ export default function ProfilePage() {
       return;
     }
 
+    // 1. Fetch User Profile
     fetch(`${API_URL}/api/scholarships/profile/`, {
       headers: { 'Authorization': `Bearer ${token}` }
     })
@@ -80,6 +83,33 @@ export default function ProfilePage() {
         setLoadingProfile(false);
       })
       .catch(err => console.error(err));
+
+    // 2. Fetch All Scholarships to cross-reference with Bookmarked IDs
+    fetch(`${API_URL}/api/scholarships/`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        const formattedData: Scholarship[] = data.map((item: any) => ({
+          id: item.id.toString(),
+          title: item.title,
+          tag: item.tag,
+          amount: item.amount,
+          deadline: item.deadline,
+          description: item.description,
+          gradient: item.gradient,
+          link: item.link,
+          bookmarked: item.bookmarked,
+          criteria: {
+            minGwa: item.min_gwa,
+            maxIncome: item.max_income,
+            course: item.course,
+          }
+        }));
+        setAllScholarships(formattedData);
+      })
+      .catch((err) => console.error("Failed to fetch scholarships:", err));
+
   }, []);
 
   // Update Profile Data to Django
