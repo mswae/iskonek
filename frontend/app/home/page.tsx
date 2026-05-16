@@ -36,12 +36,10 @@ export default function HomePage() {
     const token = localStorage.getItem('accessToken');
     
     if (!token) {
-      // If no token, bounce them back to login
       window.location.href = '/login';
       return;
     }
 
-    // Build URL with query params if they exist
     const url = new URL(`${API_URL}/api/scholarships/`);
     if (gwa) url.searchParams.append('gwa', gwa);
     if (income) url.searchParams.append('income', income);
@@ -52,11 +50,14 @@ export default function HomePage() {
         'Authorization': `Bearer ${token}`
       }
     })
-      .then((res) => {
+      .then(async (res) => {
         if (res.status === 401) {
             localStorage.removeItem('accessToken');
             window.location.href = '/login';
             throw new Error("Unauthorized");
+        }
+        if (!res.ok) {
+            throw new Error("Failed to fetch scholarships from backend.");
         }
         return res.json();
       })
@@ -78,15 +79,15 @@ export default function HomePage() {
           }
         }));
         setScholarships(formattedData);
-        setLoading(false);
       })
       .catch((err) => {
         console.error("Failed to fetch scholarships:", err);
+      })
+      .finally(() => {
         setLoading(false);
       });
   }, [API_URL]);
 
-  // Initial load uses real profile
   useEffect(() => {
     fetchScholarships();
   }, [fetchScholarships]);
@@ -100,11 +101,10 @@ export default function HomePage() {
     setFilterGwa('');
     setFilterIncome('');
     setFilterCourse('');
-    fetchScholarships(); // Fetches default profile settings
+    fetchScholarships(); 
     setPage(1);
   };
 
-  // Run the text search against the backend results
   const filtered = scholarships.filter((s) => {
     return s.title.toLowerCase().includes(search.toLowerCase()) ||
            s.description.toLowerCase().includes(search.toLowerCase());
@@ -118,13 +118,11 @@ export default function HomePage() {
       <Navbar />
 
       <main className={styles.main}>
-        {/* Page heading */}
         <div className={styles.heading}>
           <h1 className={styles.title}>Scholarship Matching</h1>
           <p className={styles.subtitle}>Find scholarships that match your profile.</p>
         </div>  
 
-        {/* Search + Filter bar */}
         <div className={styles.searchRow}>
           <div className={styles.searchWrap}>
             <SearchIcon />
@@ -145,7 +143,6 @@ export default function HomePage() {
           </button>
         </div>
 
-        {/* The "What If" Filter Panel */}
         {showFilters && (
           <div style={{ backgroundColor: '#fff', padding: '1rem', borderRadius: '8px', marginBottom: '1.5rem', border: '1px solid #eaeaea', display: 'flex', gap: '1rem', flexWrap: 'wrap', alignItems: 'flex-end' }}>
              <div style={{ display: 'flex', flexDirection: 'column', gap: '5px', flex: '1', minWidth: '120px' }}>
@@ -197,7 +194,6 @@ export default function HomePage() {
           </div>
         )}
 
-        {/* Scholarship grid */}
         {loading ? (
           <p className={styles.empty}>Loading scholarships...</p>
         ) : visible.length > 0 ? (
@@ -207,10 +203,9 @@ export default function HomePage() {
             ))}
           </div>
         ) : (
-          <p className={styles.empty}>No scholarships match these criteria.</p>
+          <p className={styles.empty}>No scholarships match these criteria. (Are you logged in as an Admin?)</p>
         )}
 
-        {/* Pagination */}
         {totalPages > 1 && (
           <div className={styles.pagination}>
             <button

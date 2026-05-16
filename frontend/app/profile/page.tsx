@@ -13,13 +13,9 @@ export default function ProfilePage() {
   const { bookmarkedIds, tasks, addTask, updateTask, deleteTask } = useAppContext();
   const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
   
-  // State to hold the live scholarships from the backend
   const [allScholarships, setAllScholarships] = useState<Scholarship[]>([]);
-
-  // Dynamically load only bookmarked scholarships from the live database
   const savedScholarships = allScholarships.filter((s) => bookmarkedIds.includes(s.id));
 
-  // Dynamic Task Stats based on your global tasks
   const TASK_STATS = [
     { label: 'Not Started', value: tasks.filter(t => t.progress === 'Not Started').length.toString().padStart(2, '0'), icon: '◻', active: false },
     { label: 'In Progress', value: tasks.filter(t => t.progress === 'In Progress').length.toString().padStart(2, '0'), icon: '📋', active: true },
@@ -27,7 +23,6 @@ export default function ProfilePage() {
     { label: 'Saved Grants', value: savedScholarships.length.toString().padStart(2, '0'), icon: '🔖', active: false },
   ];
 
-  // ── Backend Profile State ──
   const [profile, setProfile] = useState({
     fullName: '',
     email: '',
@@ -40,7 +35,6 @@ export default function ProfilePage() {
   const [profileMessage, setProfileMessage] = useState('');
   const [isProfileFormOpen, setIsProfileFormOpen] = useState(false);
 
-  // ── Ledger Task Form State ──
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingTaskId, setEditingTaskId] = useState<string | null>(null);
   const [title, setTitle] = useState('');
@@ -49,10 +43,8 @@ export default function ProfilePage() {
   const [urgency, setUrgency] = useState<TaskUrgency>('Medium');
   const [scholarshipId, setScholarshipId] = useState(''); 
 
-  // ── Dynamic Calendar State ──
   const [currentDate, setCurrentDate] = useState(new Date());
 
-  // Fetch the user data and all scholarships from Django on mount
   useEffect(() => {
     const token = localStorage.getItem('accessToken');
     if (!token) {
@@ -60,17 +52,21 @@ export default function ProfilePage() {
       return;
     }
 
-    // 1. Fetch User Profile
+    // 1. Fetch User Profile (Bulletproof)
     fetch(`${API_URL}/api/scholarships/profile/`, {
       headers: { 'Authorization': `Bearer ${token}` }
     })
-      .then(res => {
+      .then(async (res) => {
         if (res.status === 401) {
           localStorage.removeItem('accessToken');
           window.location.href = '/login';
           throw new Error('Unauthorized');
         }
-        return res.json();
+        const data = await res.json();
+        if (!res.ok) {
+           throw new Error(data.error || 'Failed to fetch profile.');
+        }
+        return data;
       })
       .then(data => {
         setProfile({
@@ -80,11 +76,16 @@ export default function ProfilePage() {
           income: data.income?.toString() || '',
           course: data.course || '',
         });
-        setLoadingProfile(false);
       })
-      .catch(err => console.error(err));
+      .catch(err => {
+        console.error(err);
+        setProfileMessage("No student profile found. If you are an Admin, you do not have a profile.");
+      })
+      .finally(() => {
+        setLoadingProfile(false);
+      });
 
-    // 2. Fetch All Scholarships to cross-reference with Bookmarked IDs
+    // 2. Fetch All Scholarships
     fetch(`${API_URL}/api/scholarships/`, {
       headers: { 'Authorization': `Bearer ${token}` }
     })
@@ -112,7 +113,6 @@ export default function ProfilePage() {
 
   }, []);
 
-  // Update Profile Data to Django
   const handleProfileSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSavingProfile(true);
@@ -133,7 +133,7 @@ export default function ProfilePage() {
       if (res.ok) {
         setProfileMessage('Profile updated successfully!');
         setTimeout(() => setProfileMessage(''), 3000);
-        setIsProfileFormOpen(false); // Close form on success
+        setIsProfileFormOpen(false); 
       } else {
         setProfileMessage('Failed to update profile. Please check your inputs.');
       }
@@ -179,7 +179,6 @@ export default function ProfilePage() {
     setIsFormOpen(false);
   };
 
-  // ── Dynamic Calendar Math ──
   const handlePrevMonth = () => {
     setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1));
   };
@@ -200,7 +199,6 @@ export default function ProfilePage() {
   const firstDayOffset = new Date(currentYear, currentMonthIdx, 1).getDay();
   const calendarDays = Array.from({ length: daysInMonth }, (_, i) => i + 1);
 
-  // Extract dates that match deadlines for saved scholarships in the current view
   const deadlineDays = savedScholarships.map(s => {
     if (!s.deadline) return null;
     const d = new Date(s.deadline);
@@ -216,7 +214,6 @@ export default function ProfilePage() {
 
       <main className={styles.main}>
 
-        {/* ── User Profile Settings ── */}
         <section className={styles.section} style={{ marginBottom: '2rem' }}>
           <div className={styles.ledgerHeader}>
             <h2 className={styles.sectionTitle} style={{ margin: 0 }}>Personal Profile</h2>
@@ -226,7 +223,7 @@ export default function ProfilePage() {
           </div>
 
           {profileMessage && (
-            <div style={{ marginTop: '1rem', padding: '10px', backgroundColor: '#d4edda', color: '#155724', borderRadius: '4px', fontSize: '14px' }}>
+            <div style={{ marginTop: '1rem', padding: '10px', backgroundColor: '#fef2f2', color: '#991b1b', borderRadius: '4px', fontSize: '14px' }}>
               {profileMessage}
             </div>
           )}
@@ -252,16 +249,15 @@ export default function ProfilePage() {
             </form>
           ) : (
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', marginTop: '1rem', padding: '1.5rem', backgroundColor: '#f8f9fa', border: '1px solid #eee', borderRadius: '8px', fontSize: '14px', color: '#333' }}>
-              <div><strong style={{ color: '#000', display: 'block', marginBottom: '4px' }}>Full Name</strong> {profile.fullName}</div>
-              <div><strong style={{ color: '#000', display: 'block', marginBottom: '4px' }}>Email</strong> {profile.email}</div>
-              <div><strong style={{ color: '#000', display: 'block', marginBottom: '4px' }}>Current GWA</strong> {profile.gwa}</div>
-              <div><strong style={{ color: '#000', display: 'block', marginBottom: '4px' }}>Annual Income</strong> ₱{Number(profile.income).toLocaleString()}</div>
-              <div><strong style={{ color: '#000', display: 'block', marginBottom: '4px' }}>Degree Program</strong> {profile.course}</div>
+              <div><strong style={{ color: '#000', display: 'block', marginBottom: '4px' }}>Full Name</strong> {profile.fullName || 'N/A'}</div>
+              <div><strong style={{ color: '#000', display: 'block', marginBottom: '4px' }}>Email</strong> {profile.email || 'N/A'}</div>
+              <div><strong style={{ color: '#000', display: 'block', marginBottom: '4px' }}>Current GWA</strong> {profile.gwa || 'N/A'}</div>
+              <div><strong style={{ color: '#000', display: 'block', marginBottom: '4px' }}>Annual Income</strong> ₱{profile.income ? Number(profile.income).toLocaleString() : 'N/A'}</div>
+              <div><strong style={{ color: '#000', display: 'block', marginBottom: '4px' }}>Degree Program</strong> {profile.course || 'N/A'}</div>
             </div>
           )}
         </section>
 
-        {/* ── Task Overview ── */}
         <section className={styles.section}>
           <h2 className={styles.sectionTitle}>Task Overview</h2>
           <div className={styles.taskRow}>
@@ -275,10 +271,8 @@ export default function ProfilePage() {
           </div>
         </section>
 
-        {/* ── Document Ledger + Calendar ── */}
         <div className={styles.midRow}>
           
-          {/* Document Ledger */}
           <section className={styles.ledger}>
             <div className={styles.ledgerHeader}>
               <h3 className={styles.ledgerTitle}>DOCUMENT LEDGER</h3>
@@ -287,7 +281,6 @@ export default function ProfilePage() {
               </button>
             </div>
 
-            {/* Task Form inside Ledger */}
             {isFormOpen && (
               <form className={styles.formContainer} onSubmit={handleSubmit}>
                 <div className={styles.formRow}>
@@ -373,7 +366,6 @@ export default function ProfilePage() {
             </table>
           </section>
 
-          {/* Dynamic Calendar */}
           <section className={styles.calendar}>
             <div className={styles.calHeader}>
               <span className={styles.calMonth}>{currentMonthName} {currentYear}</span>
@@ -385,10 +377,8 @@ export default function ProfilePage() {
             <div className={styles.calGrid}>
               {CALENDAR_HEADERS.map((d, i) => <span key={`header-${i}`} className={styles.calDayName}>{d}</span>)}
               
-              {/* Empty spaces for days before the 1st of the month */}
               {Array.from({ length: firstDayOffset }).map((_, i) => <span key={`empty-${i}`} />)}
               
-              {/* Actual days of the month */}
               {calendarDays.map((d) => {
                 const isToday = isCurrentMonthView && d === todayDate;
                 const hasDeadline = deadlineDays.includes(d);
@@ -408,7 +398,6 @@ export default function ProfilePage() {
           </section>
         </div>
 
-        {/* ── My Scholarships ── */}
         <section className={styles.section}>
           <h2 className={styles.sectionTitle}>My Scholarships</h2>
           {savedScholarships.length === 0 ? (
@@ -427,7 +416,6 @@ export default function ProfilePage() {
   );
 }
 
-// Custom SVG Action icons
 function ActionIcon({ type }: { type: 'edit' | 'delete' }) {
   if (type === 'edit') return (
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
