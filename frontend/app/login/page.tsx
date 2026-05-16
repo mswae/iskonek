@@ -15,8 +15,10 @@ export default function LoginPage() {
     e.preventDefault();
     setLoading(true);
 
+    const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+
     try {
-      const res = await fetch('http://localhost:8000/api/token/', {
+      const res = await fetch(`${API_URL}/api/token/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         // We use 'email' for the username field because of how we built the Register API
