@@ -34,6 +34,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [bookmarks, setBookmarks] = useState<BookmarkRecord[]>([]);
   const [tasks, setTasks] = useState<Task[]>([]);
 
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+
   // 1. Derived state to keep the rest of the frontend happy without breaking it
   const bookmarkedIds = bookmarks.map(b => b.scholarship.toString());
 
@@ -43,7 +45,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     if (!token) return;
 
     // Fetch Tasks
-    fetch('http://localhost:8000/api/tracker/tasks/', {
+    fetch(`${API_URL}/api/tracker/tasks/`, {
       headers: { 'Authorization': `Bearer ${token}` }
     })
       .then(async (res) => {
@@ -71,7 +73,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       });
 
     // Fetch Bookmarks
-    fetch('http://localhost:8000/api/tracker/bookmarks/', {
+    fetch(`${API_URL}/api/tracker/bookmarks/`, {
       headers: { 'Authorization': `Bearer ${token}` }
     })
       .then(res => res.json())
@@ -92,7 +94,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     if (existingBookmark) {
       // It exists -> DELETE it
       try {
-        const res = await fetch(`http://localhost:8000/api/tracker/bookmarks/${existingBookmark.id}/`, {
+        const res = await fetch(`${API_URL}/api/tracker/bookmarks/${existingBookmark.id}/`, {
           method: 'DELETE',
           headers: { 'Authorization': `Bearer ${token}` }
         });
@@ -103,7 +105,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     } else {
       // It doesn't exist -> POST it
       try {
-        const res = await fetch(`http://localhost:8000/api/tracker/bookmarks/`, {
+        const res = await fetch(`${API_URL}/api/tracker/bookmarks/`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -132,7 +134,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     };
 
     try {
-      const res = await fetch('http://localhost:8000/api/tracker/tasks/', {
+      const res = await fetch(`${API_URL}/api/tracker/tasks/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -178,7 +180,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     }
 
     try {
-      const res = await fetch(`http://localhost:8000/api/tracker/tasks/${id}/`, {
+      const res = await fetch(`${API_URL}/api/tracker/tasks/${id}/`, {
         method: 'PATCH', // We use PATCH to only update the fields that changed
         headers: {
           'Content-Type': 'application/json',
@@ -197,7 +199,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     if (!token) return;
 
     try {
-      const res = await fetch(`http://localhost:8000/api/tracker/tasks/${id}/`, {
+      const res = await fetch(`${API_URL}/api/tracker/tasks/${id}/`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${token}` }
       });
