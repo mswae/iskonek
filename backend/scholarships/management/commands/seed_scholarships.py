@@ -2,9 +2,19 @@ from django.core.management.base import BaseCommand
 from scholarships.models import Scholarship
 
 class Command(BaseCommand):
-    help = 'Seed the database with real scholarship data for Naga City / Philippines'
+    help = 'Seed the database with real scholarship data for Naga City / Philippines with expanded tags'
 
     def handle(self, *args, **kwargs):
+        
+        # Pre-defined string constants mapping all frontend choices
+        ALL_PROGRAMS = "STEM, ABM, HUMSS, GAS, TVL, Sports Track, Arts & Design, BS Computer Science, BS Information Technology, BS Information Systems, BS Computer Engineering, BS Civil Engineering, BS Electrical Engineering, BS Mechanical Engineering, BS Nursing, BS Education, BS Business Administration, AB Communication, AB Political Science, Other"
+        
+        TECH_ENGINEERING_STEM = "STEM, BS Computer Science, BS Information Technology, BS Information Systems, BS Computer Engineering, BS Civil Engineering, BS Electrical Engineering, BS Mechanical Engineering"
+        
+        BUSINESS_TRACKS = "ABM, BS Business Administration"
+        
+        EDUCATION_TRACKS = "STEM, HUMSS, GAS, AB Communication, BS Education"
+
         scholarships_data = [
             {
                 "title": "DOST-SEI Undergraduate Scholarship (RA 7687)",
@@ -16,7 +26,7 @@ class Command(BaseCommand):
                 "bookmarked": False,
                 "min_gwa": 85.0,
                 "max_income": 300000,
-                "course": "STEM, BS Computer Science, BS Information Technology",
+                "course": TECH_ENGINEERING_STEM,
                 "link": "https://www.sei.dost.gov.ph/"
             },
             {
@@ -29,7 +39,7 @@ class Command(BaseCommand):
                 "bookmarked": False,
                 "min_gwa": 93.0,
                 "max_income": 500000,
-                "course": "ALL PROGRAMS",
+                "course": ALL_PROGRAMS,
                 "link": "https://chedro5.com/scholarships"
             },
             {
@@ -42,7 +52,7 @@ class Command(BaseCommand):
                 "bookmarked": False,
                 "min_gwa": 81.0,
                 "max_income": 180000,
-                "course": "ALL PROGRAMS",
+                "course": ALL_PROGRAMS,
                 "link": "https://www2.naga.gov.ph/nagas-tertiary-scholarship-program-ntsp/"
             },
             {
@@ -55,7 +65,7 @@ class Command(BaseCommand):
                 "bookmarked": False,
                 "min_gwa": 75.0,
                 "max_income": 300000,
-                "course": "ALL PROGRAMS",
+                "course": ALL_PROGRAMS,
                 "link": "https://chedro5.com/scholarships"
             },
             {
@@ -68,7 +78,7 @@ class Command(BaseCommand):
                 "bookmarked": False,
                 "min_gwa": 88.0,
                 "max_income": 250000,
-                "course": "STEM, BS Computer Science, BS Education, BS Civil Engineering",
+                "course": f"{TECH_ENGINEERING_STEM}, {BUSINESS_TRACKS}, {EDUCATION_TRACKS}",
                 "link": "https://www.sm-foundation.org/"
             },
             {
@@ -81,7 +91,7 @@ class Command(BaseCommand):
                 "bookmarked": False,
                 "min_gwa": 88.0,
                 "max_income": 9999999,
-                "course": "STEM, BS Civil Engineering, BS Electrical Engineering",
+                "course": f"{TECH_ENGINEERING_STEM}, {BUSINESS_TRACKS}",
                 "link": "https://sites.google.com/aboitiz.com/aboitiz-future-leaders-scholar/home"
             },
             {
@@ -94,7 +104,7 @@ class Command(BaseCommand):
                 "bookmarked": False,
                 "min_gwa": 80.0,
                 "max_income": 9999999,
-                "course": "ALL PROGRAMS",
+                "course": ALL_PROGRAMS,
                 "link": "https://owwa.gov.ph/"
             },
             {
@@ -107,7 +117,7 @@ class Command(BaseCommand):
                 "bookmarked": False,
                 "min_gwa": 75.0,
                 "max_income": 500000,
-                "course": "ALL PROGRAMS",
+                "course": ALL_PROGRAMS,
                 "link": "https://chedro5.com/scholarships"
             },
             {
@@ -120,7 +130,7 @@ class Command(BaseCommand):
                 "bookmarked": False,
                 "min_gwa": 85.0,
                 "max_income": 300000,
-                "course": "BS Education, BS Business Administration",
+                "course": f"{BUSINESS_TRACKS}, {EDUCATION_TRACKS}",
                 "link": "https://www.securitybank.com/foundation/"
             },
             {
@@ -133,7 +143,7 @@ class Command(BaseCommand):
                 "bookmarked": False,
                 "min_gwa": 75.0,
                 "max_income": 9999999,
-                "course": "ALL PROGRAMS",
+                "course": ALL_PROGRAMS,
                 "link": "https://pageone.ph/napolcom-bicol-schools-ink-deal-for-scholarship-program/"
             },
             {
@@ -146,7 +156,7 @@ class Command(BaseCommand):
                 "bookmarked": False,
                 "min_gwa": 85.0,
                 "max_income": 300000,
-                "course": "STEM, BS Education",
+                "course": EDUCATION_TRACKS,
                 "link": "https://www.gokongweibrothersfoundation.org/"
             },
             {
@@ -159,7 +169,7 @@ class Command(BaseCommand):
                 "bookmarked": False,
                 "min_gwa": 85.0,
                 "max_income": 300000,
-                "course": "BS Computer Science, BS Civil Engineering",
+                "course": f"{TECH_ENGINEERING_STEM}, {BUSINESS_TRACKS}, AB Communication",
                 "link": "https://megaworldfoundation.com/"
             },
             {
@@ -172,7 +182,7 @@ class Command(BaseCommand):
                 "bookmarked": False,
                 "min_gwa": 85.0,
                 "max_income": 300000,
-                "course": "ALL PROGRAMS",
+                "course": ALL_PROGRAMS,
                 "link": "https://www.ayalafoundation.org/"
             },
             {
@@ -185,7 +195,7 @@ class Command(BaseCommand):
                 "bookmarked": False,
                 "min_gwa": 90.0,
                 "max_income": 9999999,
-                "course": "STEM, BS Computer Science, BS Information Technology",
+                "course": TECH_ENGINEERING_STEM,
                 "link": "https://www.sei.dost.gov.ph/"
             },
             {
@@ -198,7 +208,7 @@ class Command(BaseCommand):
                 "bookmarked": False,
                 "min_gwa": 90.0,
                 "max_income": 500000,
-                "course": "ALL PROGRAMS",
+                "course": ALL_PROGRAMS,
                 "link": "https://www.adnu.edu.ph/admissions/"
             }
         ]
